@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "981449638816",
+    "project_id": "kmpl-20bee",
+    "storage_bucket": "kmpl-20bee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:981449638816:android:54d32a677b3f2e97d81ac5",
+        "android_client_info": {
+          "package_name": "com.yg.mileage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "981449638816-8ocik39s9dqv6cuvqhn738burn384rnk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yg.mileage",
+            "certificate_hash": "794009e5db54205096af50905041024c3f86a93d"
+          }
+        },
+        {
+          "client_id": "981449638816-d5osb2r4tjl5r3q00ja8jh8ke65kukdc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY_s3wL2xr-zH1uaFjw1oCDAbWliCITME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "981449638816-0a9mvq58gs6rangcqaibrenfl0jhdj4l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
