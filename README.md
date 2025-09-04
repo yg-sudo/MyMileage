@@ -18,4 +18,5 @@ Whether you want to track your fuel efficiency ⛽, maintain organized trip reco
 ## 👏Contrubution
 You can support MyMileage by downloading or suggesting improvements at unmesh.ghadi@gmail.com or through a issue in Github.
 
+### Footnotes
 _*Phone sign-in is currently work in progress._
