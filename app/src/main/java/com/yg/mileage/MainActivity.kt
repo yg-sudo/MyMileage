@@ -358,6 +358,7 @@ fun AppNavHost(
         }
         composable(Screen.PersonalInfo.route) { PersonalInfoScreen(carViewModel = carViewModel) }
         composable(Screen.SecuritySettings.route) { SecuritySettingsScreen(carViewModel = carViewModel) }
+        composable(Screen.CurrencySettings.route) { CurrencySettingsScreen(carViewModel = carViewModel) }
     }
 }
 

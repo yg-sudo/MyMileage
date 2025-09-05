@@ -5,6 +5,9 @@ import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.yg.mileage.Trip
 import com.yg.mileage.Vehicle
+import com.yg.mileage.Currency
+import com.yg.mileage.FuelPrice
+import com.yg.mileage.FuelType
 import com.yg.mileage.auth.DriveService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -16,6 +19,8 @@ class Repository(
 ) {
     private val vehicleDao = database.vehicleDao()
     private val tripDao = database.tripDao()
+    private val currencyDao = database.currencyDao()
+    private val fuelPriceDao = database.fuelPriceDao()
 
     // --- VEHICLE ---
     fun getAllVehicles(userId: String): Flow<List<Vehicle>> =
@@ -70,6 +75,52 @@ class Repository(
     suspend fun deleteTrip(tripId: String, userId: String) {
         val trip = tripDao.getTripById(tripId, userId)
         trip?.let { tripDao.deleteTrip(it) }
+    }
+
+    // --- CURRENCY ---
+    fun getAllCurrencies(): Flow<List<Currency>> =
+        currencyDao.getAllCurrencies().map { it.map { e -> e.toCurrency() } }
+
+    suspend fun getDefaultCurrency(): Currency? =
+        currencyDao.getDefaultCurrency()?.toCurrency()
+
+    suspend fun addCurrency(currency: Currency) {
+        currencyDao.insertCurrency(CurrencyEntity.fromCurrency(currency))
+    }
+
+    suspend fun updateCurrency(currency: Currency) {
+        currencyDao.updateCurrency(CurrencyEntity.fromCurrency(currency))
+    }
+
+    suspend fun deleteCurrency(currency: Currency) {
+        currencyDao.deleteCurrency(CurrencyEntity.fromCurrency(currency))
+    }
+
+    suspend fun setDefaultCurrency(currencyId: String) {
+        currencyDao.clearDefaultCurrencies()
+        currencyDao.setDefaultCurrency(currencyId)
+    }
+
+    // --- FUEL PRICES ---
+    fun getAllActiveFuelPrices(): Flow<List<FuelPrice>> =
+        fuelPriceDao.getAllActiveFuelPrices().map { it.map { e -> e.toFuelPrice() } }
+
+    suspend fun getLatestFuelPrice(fuelType: FuelType): FuelPrice? =
+        fuelPriceDao.getLatestFuelPrice(fuelType)?.toFuelPrice()
+
+    suspend fun addFuelPrice(fuelPrice: FuelPrice) {
+        // Deactivate old prices for this fuel type
+        fuelPriceDao.deactivateFuelPrices(fuelPrice.fuelType)
+        // Add new price
+        fuelPriceDao.insertFuelPrice(FuelPriceEntity.fromFuelPrice(fuelPrice))
+    }
+
+    suspend fun updateFuelPrice(fuelPrice: FuelPrice) {
+        fuelPriceDao.updateFuelPrice(FuelPriceEntity.fromFuelPrice(fuelPrice))
+    }
+
+    suspend fun deleteFuelPrice(fuelPrice: FuelPrice) {
+        fuelPriceDao.deleteFuelPrice(FuelPriceEntity.fromFuelPrice(fuelPrice))
     }
 
     // --- Optional: Google Drive Backup (Only for Google Users) ---

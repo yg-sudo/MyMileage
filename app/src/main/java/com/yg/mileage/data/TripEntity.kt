@@ -17,6 +17,9 @@ data class TripEntity(
     val fuelFilled: Double?,
     val tripDistance: Double?,
     val fuelEfficiency: Double?,
+    val fuelCost: Double?,
+    val fuelPricePerUnit: Double?,
+    val currencyId: String?,
     val status: TripStatus,
     val createdAt: Date,
     val updatedAt: Date
@@ -31,6 +34,9 @@ data class TripEntity(
             fuelFilled = fuelFilled,
             tripDistance = tripDistance,
             fuelEfficiency = fuelEfficiency,
+            fuelCost = fuelCost,
+            fuelPricePerUnit = fuelPricePerUnit,
+            currencyId = currencyId,
             status = status,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -49,6 +55,9 @@ data class TripEntity(
                 fuelFilled = trip.fuelFilled,
                 tripDistance = trip.tripDistance,
                 fuelEfficiency = trip.fuelEfficiency,
+                fuelCost = trip.fuelCost,
+                fuelPricePerUnit = trip.fuelPricePerUnit,
+                currencyId = trip.currencyId,
                 status = trip.status,
                 createdAt = trip.createdAt,
                 updatedAt = trip.updatedAt

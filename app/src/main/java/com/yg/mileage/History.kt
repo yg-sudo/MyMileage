@@ -57,6 +57,7 @@ fun TripLogScreen(
     onNavigateToTripDetails: () -> Unit
 ) {
     val trips by carViewModel.savedTrips.collectAsState()
+    val defaultCurrency by carViewModel.defaultCurrency.collectAsState()
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
 
     var filterIndex by remember { mutableIntStateOf(0) }
@@ -109,6 +110,7 @@ fun TripLogScreen(
                         TripCard(
                             trip = trip,
                             dateFormat = dateFormat,
+                            defaultCurrency = defaultCurrency,
                             onEdit = {
                                 carViewModel.setEditingTrip(trip)
                                 onNavigateToTripDetails()
@@ -190,6 +192,7 @@ fun TripHistoryFilterSegmented(
 fun TripCard(
     trip: Trip,
     dateFormat: SimpleDateFormat,
+    defaultCurrency: Currency?,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -262,6 +265,15 @@ fun TripCard(
                 trip.fuelEfficiency?.let {
                     Text(
                         text = "Efficiency: $it km/Ltr",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                trip.fuelCost?.let { cost ->
+                    val currencySymbol = defaultCurrency?.symbol ?: trip.currencyId ?: ""
+                    Text(
+                        text = "Fuel Cost: $currencySymbol${String.format("%.2f", cost)}",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary

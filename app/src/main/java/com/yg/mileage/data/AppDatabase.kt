@@ -11,14 +11,16 @@ import com.yg.mileage.TripStatus
 import java.util.Date
 
 @Database(
-    entities = [VehicleEntity::class, TripEntity::class],
-    version = 6,
+    entities = [VehicleEntity::class, TripEntity::class, CurrencyEntity::class, FuelPriceEntity::class],
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun vehicleDao(): VehicleDao
     abstract fun tripDao(): TripDao
+    abstract fun currencyDao(): CurrencyDao
+    abstract fun fuelPriceDao(): FuelPriceDao
 
     companion object {
         @Volatile
@@ -31,7 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "mileage_database"
                 )
-                  .addMigrations(MIGRATION_6_7)
+                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                     .build()
                 INSTANCE = instance
                 instance

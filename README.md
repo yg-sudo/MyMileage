@@ -15,7 +15,7 @@ MyMileage is a modern Android app that makes tracking your vehicle’s mileage �
 
 Whether you want to track your fuel efficiency ⛽, maintain organized trip records 📖, or manage multiple vehicles 🚗, MyMileage provides the tools you need in a smooth, visually appealing, and reliable app.
 
-## 👏Contrubution
+## 👏Contribution
 You can support MyMileage by downloading or suggesting improvements at unmesh.ghadi@gmail.com or through a issue in Github.
 
 ### Footnotes

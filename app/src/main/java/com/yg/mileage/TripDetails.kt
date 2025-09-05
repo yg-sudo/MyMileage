@@ -79,12 +79,14 @@ fun MileageCalculatorScreen(
     var vehicleDropdownExpanded by remember { mutableStateOf(false) }
     var tripDistance by remember { mutableStateOf<Double?>(null) }
     var customCalculationResult by remember { mutableStateOf<Double?>(null) }
+    var fuelCost by remember { mutableStateOf<Double?>(null) }
     var messageType by remember { mutableStateOf<AppMessageType?>(null) }
     var messageText by remember { mutableStateOf("") }
     var showMessage by remember { mutableStateOf(false) }
     var isCalculating by remember { mutableStateOf(false) }
 
     val editingTrip by carViewModel.editingTrip.collectAsState()
+    val defaultCurrency by carViewModel.defaultCurrency.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -115,12 +117,14 @@ fun MileageCalculatorScreen(
             fuelFilledText = trip.fuelFilled?.toString() ?: ""
             tripDistance = trip.tripDistance
             customCalculationResult = trip.fuelEfficiency
+            fuelCost = trip.fuelCost
         } ?: run {
             startMileageText = ""
             endMileageText = ""
             fuelFilledText = ""
             tripDistance = null
             customCalculationResult = null
+            fuelCost = null
         }
     }
 
@@ -167,6 +171,7 @@ fun MileageCalculatorScreen(
                                     vehicleDropdownExpanded = false
                                     tripDistance = null
                                     customCalculationResult = null
+                                    fuelCost = null
                                     showMessage = false
                                     if (editingTrip != null) {
                                         carViewModel.setEditingTrip(null)
@@ -190,6 +195,7 @@ fun MileageCalculatorScreen(
                         startMileageText = it
                         tripDistance = null
                         customCalculationResult = null
+                        fuelCost = null
                         showMessage = false
                     },
                     label = { Text("Trip Start") },
@@ -205,6 +211,7 @@ fun MileageCalculatorScreen(
                         endMileageText = it
                         tripDistance = null
                         customCalculationResult = null
+                        fuelCost = null
                         showMessage = false
                     },
                     label = { Text("Trip End") },
@@ -227,6 +234,7 @@ fun MileageCalculatorScreen(
                             fuelFilledText = itInput
                             tripDistance = null
                             customCalculationResult = null
+                            fuelCost = null
                             showMessage = false
                         }
                     },
@@ -275,9 +283,23 @@ fun MileageCalculatorScreen(
                             coroutineScope.launch(Dispatchers.Default) {
                                 val distance = end - start
                                 val efficiency = distance / fuel
+                                
+                                // Calculate fuel cost if we have fuel price data - fixed smart cast issues
+                                var calculatedFuelCost: Double? = null
+                                
+                                val vehicle = selectedVehicle
+                                val fuelType = vehicle?.fuelType
+                                if (fuelType != null) {
+                                    val latestFuelPrice = carViewModel.getLatestFuelPrice(fuelType)
+                                    if (latestFuelPrice != null) {
+                                        calculatedFuelCost = fuel * latestFuelPrice.pricePerUnit
+                                    }
+                                }
+                                
                                 delay(1000)
                                 tripDistance = distance
                                 customCalculationResult = efficiency
+                                fuelCost = calculatedFuelCost
                                 showMessage(AppMessageType.SUCCESS, "Calculation complete!")
                                 isCalculating = false
                             }
@@ -316,21 +338,50 @@ fun MileageCalculatorScreen(
                                 val efficiency = distance / fuel!!
                                 tripDistance = distance
                                 customCalculationResult = efficiency
+                                
+                                // Calculate fuel cost if we have fuel price data - fixed smart cast issues
+                                val vehicle = selectedVehicle
+                                val fuelType = vehicle?.fuelType
+                                if (fuelType != null) {
+                                    coroutineScope.launch {
+                                        val latestFuelPrice = carViewModel.getLatestFuelPrice(fuelType)
+                                        if (latestFuelPrice != null) {
+                                            fuelCost = fuel * latestFuelPrice.pricePerUnit
+                                        }
+                                    }
+                                }
                             }
 
-                            val trip = Trip(
-                                id = currentTripId ?: generateUniqueTripId(),
-                                vehicleId = vehicle.id,
-                                vehicleName = vehicle.name,
-                                startMileage = start,
-                                endMileage = end,
-                                fuelFilled = fuel,
-                                tripDistance = if (isComplete) tripDistance else null,
-                                fuelEfficiency = if (isComplete) customCalculationResult else null,
-                                status = if (isComplete) TripStatus.COMPLETED else TripStatus.DRAFT,
-                            )
-
                             coroutineScope.launch {
+                                // Get fuel price data for the trip
+                                var tripFuelPricePerUnit: Double? = null
+                                var tripCurrencyId: String? = null
+                                
+                                if (isComplete) {
+                                    val vehicle = selectedVehicle
+                                    val fuelType = vehicle?.fuelType
+                                    if (fuelType != null) {
+                                        val latestFuelPrice = carViewModel.getLatestFuelPrice(fuelType)
+                                        tripFuelPricePerUnit = latestFuelPrice?.pricePerUnit
+                                        tripCurrencyId = latestFuelPrice?.currencyId
+                                    }
+                                }
+
+                                val trip = Trip(
+                                    id = currentTripId ?: generateUniqueTripId(),
+                                    vehicleId = vehicle.id,
+                                    vehicleName = vehicle.name,
+                                    startMileage = start,
+                                    endMileage = end,
+                                    fuelFilled = fuel,
+                                    tripDistance = if (isComplete) tripDistance else null,
+                                    fuelEfficiency = if (isComplete) customCalculationResult else null,
+                                    fuelCost = if (isComplete) fuelCost else null,
+                                    fuelPricePerUnit = tripFuelPricePerUnit,
+                                    currencyId = tripCurrencyId,
+                                    status = if (isComplete) TripStatus.COMPLETED else TripStatus.DRAFT,
+                                )
+
                                 if (currentTripId != null || isTripInProgress) {
                                     carViewModel.updateTrip(trip, googleAccount)
                                 } else {
@@ -404,6 +455,7 @@ fun MileageCalculatorScreen(
                             isCalculating = false
                             tripDistance = null
                             customCalculationResult = null
+                            fuelCost = null
                         }, modifier = Modifier.size(20.dp)) {
                             Icon(Icons.Filled.Close, contentDescription = "Close Result")
                         }
@@ -444,6 +496,17 @@ fun MileageCalculatorScreen(
                                 textAlign = TextAlign.Center,
                                 color = Color.White
                             )
+                            if (fuelCost != null) {
+                                val currency = defaultCurrency
+                                val currencySymbol = currency?.symbol ?: ""
+                                Text(
+                                    text = "Fuel Cost: $currencySymbol${decimalFormat.format(fuelCost)}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }

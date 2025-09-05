@@ -34,28 +34,58 @@ class CarViewModel(
     private val _signInCompleted = MutableSharedFlow<Unit>()
     val signInCompleted = _signInCompleted.asSharedFlow()
 
+    private val _currencies = MutableStateFlow<List<Currency>>(emptyList())
+    val currencies: StateFlow<List<Currency>> = _currencies.asStateFlow()
+
+    private val _fuelPrices = MutableStateFlow<List<FuelPrice>>(emptyList())
+    val fuelPrices: StateFlow<List<FuelPrice>> = _fuelPrices.asStateFlow()
+
+    private val _defaultCurrency = MutableStateFlow<Currency?>(null)
+    val defaultCurrency: StateFlow<Currency?> = _defaultCurrency.asStateFlow()
+
     private var tripJob: Job? = null
     private var vehicleJob: Job? = null
+    private var currencyJob: Job? = null
+    private var fuelPriceJob: Job? = null
     private var currentUserId: String? = null
 
     fun observeUserData(userId: String) {
         currentUserId = userId
         tripJob?.cancel()
         vehicleJob?.cancel()
+        currencyJob?.cancel()
+        fuelPriceJob?.cancel()
+        
         tripJob = viewModelScope.launch {
             repository.getAllTrips(userId).collect { trips -> _savedTrips.value = trips }
         }
         vehicleJob = viewModelScope.launch {
             repository.getAllVehicles(userId).collect { vehicles -> _savedVehicles.value = vehicles }
         }
+        currencyJob = viewModelScope.launch {
+            repository.getAllCurrencies().collect { currencies -> _currencies.value = currencies }
+        }
+        fuelPriceJob = viewModelScope.launch {
+            repository.getAllActiveFuelPrices().collect { fuelPrices -> _fuelPrices.value = fuelPrices }
+        }
+        
+        // Load default currency
+        viewModelScope.launch {
+            _defaultCurrency.value = repository.getDefaultCurrency()
+        }
     }
 
     fun clearUserData() {
         tripJob?.cancel()
         vehicleJob?.cancel()
+        currencyJob?.cancel()
+        fuelPriceJob?.cancel()
         currentUserId = null
         _savedTrips.value = emptyList()
         _savedVehicles.value = emptyList()
+        _currencies.value = emptyList()
+        _fuelPrices.value = emptyList()
+        _defaultCurrency.value = null
         _editingTrip.value = null
     }
 
@@ -174,5 +204,40 @@ class CarViewModel(
             val success = repository.backupTripsToDrive(userId, googleAccount)
             onResult(success, if (success) "Backup successful." else "Backup failed.")
         }
+    }
+
+    // Currency functions
+    suspend fun addCurrency(currency: Currency) {
+        repository.addCurrency(currency)
+    }
+
+    suspend fun updateCurrency(currency: Currency) {
+        repository.updateCurrency(currency)
+    }
+
+    suspend fun deleteCurrency(currency: Currency) {
+        repository.deleteCurrency(currency)
+    }
+
+    suspend fun setDefaultCurrency(currencyId: String) {
+        repository.setDefaultCurrency(currencyId)
+        _defaultCurrency.value = repository.getDefaultCurrency()
+    }
+
+    // Fuel price functions
+    suspend fun addFuelPrice(fuelPrice: FuelPrice) {
+        repository.addFuelPrice(fuelPrice)
+    }
+
+    suspend fun updateFuelPrice(fuelPrice: FuelPrice) {
+        repository.updateFuelPrice(fuelPrice)
+    }
+
+    suspend fun deleteFuelPrice(fuelPrice: FuelPrice) {
+        repository.deleteFuelPrice(fuelPrice)
+    }
+
+    suspend fun getLatestFuelPrice(fuelType: FuelType): FuelPrice? {
+        return repository.getLatestFuelPrice(fuelType)
     }
 }
