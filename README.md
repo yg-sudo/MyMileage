@@ -9,7 +9,7 @@ MyMileage is a modern Android app that makes tracking your vehicle’s mileage �
 
 • 📂 Trip History & Filters: Browse your trip history and filter by all, completed, or draft trips.
 
-• 📋 Profile Overview: Manage your vehicle list in a simple, organized grid view.
+• 📋 Profile Overview: Manage your vehicle list in a simple, organized grid view.🐾
 
 • 🔐 Google Sign-In: Sign in with Google, Email, and Phone.*
 
@@ -18,5 +18,5 @@ Whether you want to track your fuel efficiency ⛽, maintain organized trip reco
 ## 👏Contribution
 You can support MyMileage by downloading or suggesting improvements at unmesh.ghadi@gmail.com or through a issue in Github.
 
-### Footnotes
+## 🐾Footnotes
 _*Phone sign-in is currently work in progress._
