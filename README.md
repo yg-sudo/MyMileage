@@ -41,5 +41,15 @@ You can support MyMileage by downloading or suggesting improvements at unmesh.gh
 
 <img width="400" src="https://github.com/user-attachments/assets/e1a3093d-5065-4940-b202-14d133255a1c" />
 
+## Star History
+
+<a href="https://www.star-history.com/#ygllc/MyMileage&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ygllc/MyMileage&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ygllc/MyMileage&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ygllc/MyMileage&type=date&legend=top-left" />
+ </picture>
+</a>
+
 ### Footnotes
 _*Phone sign-in is currently work in progress._
