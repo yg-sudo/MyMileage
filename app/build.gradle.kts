@@ -52,6 +52,23 @@ android {
             )
         }
     }
+
+signingConfigs {
+        create("release") {
+            val keystoreFile = System.getenv("APP_UPLOAD_KEYSTORE_FILE")
+            val keystorePassword = System.getenv("APP_UPLOAD_STORE_PASSWORD")
+            val keyAlias = System.getenv("APP_UPLOAD_KEY_ALIAS")
+            val keyPassword = System.getenv("APP_UPLOAD_KEY_PASSWORD")
+
+            if (keystoreFile != null && keystorePassword != null) {
+                storeFile = file(keystoreFile)
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
