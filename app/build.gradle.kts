@@ -43,17 +43,6 @@ android {
         }
     }
 
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true   // AFTER: Enable code shrinking and obfuscation
-            isShrinkResources = true  // AFTER: Enable code shrinking and obfuscation
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            )
-        }
-    }
-
 signingConfigs {
         create("release") {
             val keystoreFile = System.getenv("APP_UPLOAD_KEYSTORE_FILE")
@@ -67,6 +56,19 @@ signingConfigs {
                 this.keyAlias = keyAlias
                 this.keyPassword = keyPassword
             }
+        }
+    }
+
+    buildTypes {
+        release {
+            // This line causes the error if the block above is missing
+            signingConfig = signingConfigs.getByName("release")
+            
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
         }
     }
 
