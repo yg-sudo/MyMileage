@@ -1,0 +1,64 @@
+name: Release Build
+
+on:
+  push:
+    tags: [ "v*" ] # Triggers on v1.0, v2.3.4, etc.
+
+jobs:
+  release_job:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to create GitHub Releases
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      # 1. Decode Keystore from Secrets
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.APP_UPLOAD_KEYSTORE_BASE64 }}" | base64 --decode > app/my-upload-key.jks
+
+      # 2. Create Google Play Key (from Secrets)
+      - name: Create Google Play Key
+        run: echo "${{ secrets.GOOGLE_PLAY_JSON_KEY }}" > fastlane/api-key.json
+
+      # 3. Build & Sign (Injecting Secrets)
+      - name: Build Release (AAB & APK)
+        env:
+          APP_UPLOAD_KEYSTORE_FILE: "my-upload-key.jks"
+          APP_UPLOAD_STORE_PASSWORD: ${{ secrets.APP_UPLOAD_STORE_PASSWORD }}
+          APP_UPLOAD_KEY_ALIAS: ${{ secrets.APP_UPLOAD_KEY_ALIAS }}
+          APP_UPLOAD_KEY_PASSWORD: ${{ secrets.APP_UPLOAD_KEY_PASSWORD }}
+        run: fastlane build_release
+
+      # 4. Create GitHub Release (Uploads APK)
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # 5. Upload AAB to Artifacts (For manual upload to Play Console)
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
