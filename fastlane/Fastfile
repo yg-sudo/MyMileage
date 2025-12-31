@@ -6,24 +6,19 @@ platform :android do
     gradle(task: "test")
   end
 
-  desc "Build both AAB (for Play Store) and APK (for GitHub)"
+  desc "Build Debug APK"
+  lane :build_debug do
+    gradle(task: "assembleDebug")
+  end
+
+  desc "Build Release (AAB & APK)"
   lane :build_release do
     gradle(task: "clean")
     
-    # 1. Build the AAB (App Bundle)
+    # Build AAB (App Bundle) for Google Play
     gradle(task: "bundleRelease")
     
-    # 2. Build the APK
+    # Build APK for GitHub Release / Direct Install
     gradle(task: "assembleRelease")
-  end
-
-  # Optional: Lane to actually upload to Play Store
-  desc "Deploy to Play Store Internal Track"
-  lane :upload_to_play do
-    upload_to_play_store(
-      track: 'internal',
-      aab: 'app/build/outputs/bundle/release/app-release.aab',
-      skip_upload_apk: true # We only upload AAB to Play Store
-    )
   end
 end
