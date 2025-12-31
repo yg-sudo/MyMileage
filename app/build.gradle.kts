@@ -45,6 +45,7 @@ android {
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true   // AFTER: Enable code shrinking and obfuscation
             isShrinkResources = true  // AFTER: Enable code shrinking and obfuscation
             proguardFiles(
