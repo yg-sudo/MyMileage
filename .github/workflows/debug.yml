@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # --- [FIX START] ---
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+      # --- [FIX END] ---
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -34,7 +39,6 @@ jobs:
       - name: Build Debug APK
         run: fastlane build_debug
 
-      # Optional: Upload Debug APK to download from GitHub Actions Summary
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
