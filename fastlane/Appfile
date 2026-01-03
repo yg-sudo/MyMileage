@@ -1,0 +1,2 @@
+json_key_file("fastlane/api-key.json")
+package_name("com.yg.mileage")

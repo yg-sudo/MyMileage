@@ -1,0 +1,24 @@
+default_platform(:android)
+
+platform :android do
+  desc "Run Unit Tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Build Debug APK"
+  lane :build_debug do
+    gradle(task: "assembleDebug")
+  end
+
+  desc "Build Release (AAB & APK)"
+  lane :build_release do
+    gradle(task: "clean")
+    
+    # Build AAB (App Bundle) for Google Play
+    gradle(task: "bundleRelease")
+    
+    # Build APK for GitHub Release / Direct Install
+    gradle(task: "assembleRelease")
+  end
+end

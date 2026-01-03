@@ -43,10 +43,29 @@ android {
         }
     }
 
+signingConfigs {
+        create("release") {
+            val keystoreFile = System.getenv("APP_UPLOAD_KEYSTORE_FILE")
+            val keystorePassword = System.getenv("APP_UPLOAD_STORE_PASSWORD")
+            val keyAlias = System.getenv("APP_UPLOAD_KEY_ALIAS")
+            val keyPassword = System.getenv("APP_UPLOAD_KEY_PASSWORD")
+
+            if (keystoreFile != null && keystorePassword != null) {
+                storeFile = file(keystoreFile)
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = true   // AFTER: Enable code shrinking and obfuscation
-            isShrinkResources = true  // AFTER: Enable code shrinking and obfuscation
+            // This line causes the error if the block above is missing
+            signingConfig = signingConfigs.getByName("release")
+
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
@@ -55,6 +74,7 @@ android {
     buildFeatures {
         compose = true
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

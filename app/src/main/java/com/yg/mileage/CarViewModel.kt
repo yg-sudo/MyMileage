@@ -260,4 +260,24 @@ class CarViewModel(
     suspend fun getLatestFuelPrice(fuelType: FuelType): FuelPrice? {
         return repository.getLatestFuelPrice(fuelType)
     }
+
+    fun changePassword(password: String, onResult: (Boolean, String?) -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            user.updatePassword(password).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onResult(true, null)
+                } else {
+                    val errorMsg = if (task.exception is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
+                        "For security, please sign out and sign in again to change your password."
+                    } else {
+                        task.exception?.message ?: "Unknown error"
+                    }
+                    onResult(false, errorMsg)
+                }
+            }
+        } else {
+            onResult(false, "No user signed in.")
+        }
+    }
 }
