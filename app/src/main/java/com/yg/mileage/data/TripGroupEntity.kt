@@ -1,6 +1,6 @@
 /*
  * MyMileage – Your Smart Vehicle Mileage Tracker
- * Copyright (C) 2025  Yojit Ghadi
+ * Copyright (C) 2026 Yojit Ghadi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.compose.compiler) apply false
-}
+package com.yg.mileage.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.Date
+
+@Entity(tableName = "tripGroup")
+data class TripGroupEntity(
+    @PrimaryKey val id: String,
+    val userId: String,
+    val groupName: String,
+    val createdAt: Date,
+    val updatedAt: Date
+)

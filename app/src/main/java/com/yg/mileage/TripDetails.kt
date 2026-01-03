@@ -20,7 +20,6 @@
 
 package com.yg.mileage
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -70,14 +69,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yg.mileage.data.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -342,9 +338,9 @@ fun MileageCalculatorScreen(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
                         onClick = {
@@ -404,7 +400,11 @@ fun MileageCalculatorScreen(
                             }
                         },
                         enabled = true,
-                        contentPadding = ButtonDefaults.ContentPadding
+                        contentPadding = ButtonDefaults.ContentPadding,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
                         Icon(Icons.Rounded.Calculate, contentDescription = "Calculate Mileage")
                         Spacer(modifier = Modifier.width(8.dp))
@@ -422,7 +422,6 @@ fun MileageCalculatorScreen(
                                 showMessage(AppMessageType.ERROR, "Please select a vehicle profile.")
                                 return@Button
                             }
-
                             // Only logical validation (allow drafts)
                             if (start != null && end != null && end < start) {
                                 showMessage(AppMessageType.ERROR, "End mileage cannot be less than start mileage.")
@@ -502,7 +501,8 @@ fun MileageCalculatorScreen(
                             }
                         },
                         enabled = true,
-                        contentPadding = ButtonDefaults.ContentPadding
+                        contentPadding = ButtonDefaults.ContentPadding,
+                        modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Rounded.Save, contentDescription = "Save Trip")
                         Spacer(modifier = Modifier.width(8.dp))
@@ -524,7 +524,7 @@ fun MileageCalculatorScreen(
                     shape = RoundedCornerShape(20.dp),
                     colors = when (messageType) {
                         AppMessageType.ERROR -> CardDefaults.cardColors(
-                            containerColor = Color(0xFF1C0E10),
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
                             contentColor = Color.White
                         )
                         AppMessageType.WARNING -> CardDefaults.cardColors(
@@ -532,7 +532,7 @@ fun MileageCalculatorScreen(
                             contentColor = Color.White
                         )
                         AppMessageType.SUCCESS -> CardDefaults.cardColors(
-                            containerColor = Color(0xFF2F4578),
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = Color.White
                         )
                         AppMessageType.INFO, null -> CardDefaults.cardColors(
@@ -616,19 +616,4 @@ fun MileageCalculatorScreen(
             }
         }
     }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Composable
-@Preview
-fun TripDetailsPreview(
-    modifier : Modifier = Modifier
-) {
-    val context = LocalContext.current
-    MileageCalculatorScreen(
-        modifier = modifier,
-        carViewModel = CarViewModel(
-        repository = Repository.getRepository(context)
-    )
-    )
 }

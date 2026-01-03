@@ -56,7 +56,6 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.yg.mileage.ui.theme.primaryLight
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -209,7 +208,7 @@ fun VehicleCard(
                     modifier = Modifier.size(32.dp),
                     shape = MaterialShapes.Cookie9Sided.toShape(),
                     colors = IconButtonColors(
-                        containerColor = primaryLight,
+                        containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White,
                         disabledContainerColor = Gray,
                         disabledContentColor = Color.White
@@ -218,7 +217,7 @@ fun VehicleCard(
                     Icon(
                         imageVector = Icons.Filled.Edit,
                         contentDescription = "Edit",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                 }

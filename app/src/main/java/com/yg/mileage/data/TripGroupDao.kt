@@ -1,6 +1,6 @@
 /*
  * MyMileage – Your Smart Vehicle Mileage Tracker
- * Copyright (C) 2025  Yojit Ghadi
+ * Copyright (C) 2026 Yojit Ghadi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.google.services) apply false
-    alias(libs.plugins.compose.compiler) apply false
+package com.yg.mileage.data
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface TripGroupDao {
+    @Insert
+    suspend fun insert(tripGroup: TripGroupEntity)
+
+    @Query("SELECT * FROM tripGroup WHERE userId = :userId ORDER BY createdAt DESC")
+    fun getAllTripGroups(userId: String): Flow<List<TripGroupEntity>>
 }

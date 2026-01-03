@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 
 package com.yg.mileage
 
@@ -89,6 +89,7 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -108,9 +109,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.yg.mileage.ui.theme.MileageCalculatorTheme
-import com.yg.mileage.ui.theme.googleFlex400
-import com.yg.mileage.ui.theme.googleFlexRoundedBody
 import com.yg.mileage.ui.theme.primaryContainerLight
 import com.yg.mileage.ui.theme.primaryLight
 
@@ -353,7 +360,7 @@ fun BlankSettingsContainer() {
         ) {}
     }
 Spacer(modifier = Modifier.height(100.dp))
-    Text(text = "Test", fontFamily = googleFlex400)
+    Text(text = "Test")
 }
 data class AbsoluteSmoothCornerShape(
     val cornerRadiusTL: Dp = 0.dp,
@@ -485,7 +492,7 @@ fun FloatingNavBarDemoWithSmoothShape() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Simulated player expansion: ${"%.2f".format(expansionFraction)}", fontFamily = googleFlexRoundedBody)
+                Text("Simulated player expansion: ${"%.2f".format(expansionFraction)}")
                 Spacer(modifier = Modifier.height(12.dp))
                 Slider(
                     value = expansionFraction,
@@ -639,4 +646,58 @@ fun TestPreview() {
 @Preview
 fun M3EDropdown() {
 
+}
+fun learning(
+    heck: String,
+    ohno: String,
+) {
+    // Create new local variables that can be changed
+    var localHeck = heck
+    var localOhno = ohno
+
+    // Now you can modify the new variables
+    localHeck = "Heck, my phone is dead"
+    localOhno = "Oh no, my phone is dead"
+
+    if (localHeck == true.toString()) {
+        println(localHeck)
+    }
+    else {
+        println(localOhno)
+    }
+}
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ExpressiveBarChart(modelProducer: CartesianChartModelProducer) {
+    CartesianChartHost(
+        chart = rememberCartesianChart(
+            rememberColumnCartesianLayer(
+                ColumnCartesianLayer.ColumnProvider.series(
+                    rememberLineComponent(
+                        thickness = 16.dp,
+                        shape = CorneredShape.Pill // <--- KEY COMPONENT
+                    )
+                )
+            )
+        ),
+        modelProducer = modelProducer,
+        // Apply Expressive Motion
+        animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+    )
+}
+@Composable
+@Preview
+fun ExpressiveBarChartPreview() {
+    val modelProducer = remember { CartesianChartModelProducer() }
+    LaunchedEffect(Unit) {
+        modelProducer.runTransaction {
+            /* * Add dummy data here.
+             * The syntax depends on your Vico version, but usually looks like:
+             */
+            columnSeries {
+                series(4, 12, 8, 16, 10) // Example values
+            }
+        }
+    }
+    ExpressiveBarChart(modelProducer = modelProducer)
 }

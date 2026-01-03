@@ -31,10 +31,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FetalKick">
 
-        <!-- Disable Advertising ID collection for Firebase Analytics -->
-        <meta-data
-            android:name="google_analytics_adid_collection_enabled"
-            android:value="false" />
 
         <activity
             android:name="com.yg.mileage.MainActivity"
@@ -60,6 +56,11 @@
                     android:path="/__/auth/handler" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5100615308326252~7690683839"
+        />
+
     </application>
 
 </manifest>

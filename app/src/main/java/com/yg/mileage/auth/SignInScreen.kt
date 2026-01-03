@@ -37,10 +37,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -129,12 +128,11 @@ fun SignInScreen(
                         Text("Log in")
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(thickness = 1.dp, color = MyMileage)
                     Text("OR", fontFamily = robotoFlexTopAppBar, fontWeight = FontWeight.Bold, color = MyMileage)
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row {
-                        IconButton(
+                        OutlinedIconButton(
                             onClick = onGoogleSignInClick,
                             colors = IconButtonDefaults.iconButtonColors(containerColor = MyMileage),
                             shape = MaterialShapes.Square.toShape()
@@ -144,10 +142,10 @@ fun SignInScreen(
                                 contentDescription = "Google"
                             )
                         }
-                        IconButton(
+                        OutlinedIconButton(
                             onClick = { phoneLoginMessage = "Phone Login Under Development" },
                             colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(0.dp),
+                            shape = MaterialShapes.Square.toShape(),
                         ) {
                             Image(
                                 imageVector = Icons.Rounded.Call,
@@ -155,10 +153,10 @@ fun SignInScreen(
                             )
                         }
                         // Microsoft sign-in button in SignInScreen.kt
-                        IconButton(
+                        OutlinedIconButton(
                             onClick = onMicrosoftSignInClick,
                             colors = IconButtonDefaults.iconButtonColors(containerColor = Color.White),
-                            shape = RoundedCornerShape(0.dp),
+                            shape = MaterialShapes.Square.toShape(),
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.microsoft_logo),
@@ -188,7 +186,7 @@ fun SignInScreen(
                     }
                     TextButton(
                         onClick = { onSignUpClick() },
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        modifier = Modifier.align(Alignment.End),
                         colors = ButtonDefaults.textButtonColors(contentColor = MyMileage)
                     ) {
                         Text("Don't have an account? Sign up")

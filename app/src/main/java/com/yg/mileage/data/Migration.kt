@@ -20,13 +20,14 @@ package com.yg.mileage.data
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import java.util.UUID
 
 val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Drop existing tables completely and recreate them
         db.execSQL("DROP TABLE IF EXISTS `vehicles`")
         db.execSQL("DROP TABLE IF EXISTS `trips`")
-        
+
         // Create new vehicles table with id as primary key
         db.execSQL("""
             CREATE TABLE `vehicles` (
@@ -37,7 +38,7 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
                 `updatedAt` INTEGER NOT NULL
             )
         """)
-        
+
         // Create new trips table with vehicleId
         db.execSQL("""
             CREATE TABLE `trips` (
@@ -63,7 +64,7 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         // Drop and recreate tables to ensure correct schema
         db.execSQL("DROP TABLE IF EXISTS `vehicles`")
         db.execSQL("DROP TABLE IF EXISTS `trips`")
-        
+
         // Create vehicles table with correct schema
         db.execSQL("""
             CREATE TABLE `vehicles` (
@@ -74,7 +75,7 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
                 `updatedAt` INTEGER NOT NULL
             )
         """)
-        
+
         // Create trips table with correct schema
         db.execSQL("""
             CREATE TABLE `trips` (
@@ -138,7 +139,7 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
                 `isDefault` INTEGER NOT NULL DEFAULT 0
             )
         """)
-        
+
         // Create fuel_prices table
         db.execSQL("""
             CREATE TABLE `fuel_prices` (
@@ -150,7 +151,7 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
                 `isActive` INTEGER NOT NULL DEFAULT 1
             )
         """)
-        
+
         // Insert default currencies
         db.execSQL("INSERT INTO currencies (id, code, name, symbol, isDefault) VALUES ('usd', 'USD', 'US Dollar', '$', 1)")
         db.execSQL("INSERT INTO currencies (id, code, name, symbol, isDefault) VALUES ('eur', 'EUR', 'Euro', '€', 0)")
@@ -185,5 +186,27 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
         if (!hasColumn(db, "trips", "currencyId")) {
             db.execSQL("ALTER TABLE trips ADD COLUMN currencyId TEXT")
         }
+    }
+}
+
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Create tripGroup table
+        db.execSQL("""
+            CREATE TABLE `tripGroup` (
+                `id` TEXT NOT NULL PRIMARY KEY,
+                `userId` TEXT NOT NULL,
+                `groupName` TEXT NOT NULL,
+                `createdAt` INTEGER NOT NULL,
+                `updatedAt` INTEGER NOT NULL
+            )
+        """)
+
+        // Insert sample data
+        val id = UUID.randomUUID().toString()
+        val userId = "mGUTnIsxxmOzBqfdddqVs0ak3BJ3"
+        val groupName = "Udaipur Trip"
+        val now = System.currentTimeMillis()
+        db.execSQL("INSERT INTO tripGroup (id, userId, groupName, createdAt, updatedAt) VALUES ('$id', '$userId', '$groupName', $now, $now)")
     }
 }

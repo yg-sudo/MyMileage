@@ -22,7 +22,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.google.services)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -52,6 +52,9 @@ android {
             )
         }
     }
+    buildFeatures {
+        compose = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -66,7 +69,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.5" // Compatible with Kotlin 1.9.20
+        kotlinCompilerExtensionVersion = "1.5.15" // Compatible with Kotlin 1.9.20
     }
     packaging {
         resources {
@@ -89,6 +92,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.material3)
     implementation(libs.androidx.material3.window.size.class1)
+    implementation(libs.material3.adaptive)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.ui.text)
@@ -97,7 +101,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-    androidTestImplementation(libs.androidx.room.testing)
+    /** Vico */
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
     /** Navigation */
     implementation(libs.androidx.navigation.compose)
     /** Google Services */
@@ -111,13 +117,15 @@ dependencies {
     implementation(libs.androidx.credential)
     implementation(libs.androidx.credential.play.services.auth)
     implementation(libs.googleid)
-    // Testing
+    /** Testing */
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    // Debug
+    // Room
+    androidTestImplementation(libs.androidx.room.testing)
+    /** Debug */
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     /** Firebase */
@@ -138,9 +146,12 @@ dependencies {
     implementation(libs.play.services.mlkit.text.recognition)
     // Accompanist Permissions for handling runtime camera permissions
     implementation(libs.accompanist.permissions)
-    /** Play In-app updates */
+    /** Play in-app updates */
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
-
-
+    /** Ads */
+    implementation(libs.firebase.admob.ads)
+    /** Widgets */
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.material3)
 }

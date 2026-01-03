@@ -22,26 +22,77 @@ package com.yg.mileage.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.yg.mileage.R
+import com.yg.mileage.ui.theme.AppFonts.googleFlex400
+import com.yg.mileage.ui.theme.AppFonts.googleFlex600
 
 
-val RobotoFlex = FontFamily(
-    Font(R.font.roboto_flex_variable)
-)
+val RobotoFlex = FontFamily(Font(R.font.roboto_flex_variable))
 // Set of Material typography styles to start with
+val TYPOGRAPHY = Typography()
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+    displayLarge = TYPOGRAPHY.displayLarge.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    displayMedium = TYPOGRAPHY.displayMedium.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    displaySmall = TYPOGRAPHY.displaySmall.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    headlineLarge = TYPOGRAPHY.headlineLarge.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    headlineMedium = TYPOGRAPHY.headlineMedium.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    headlineSmall = TYPOGRAPHY.headlineSmall.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    titleLarge = TYPOGRAPHY.titleLarge.copy(
+        fontFamily = googleFlex400,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    titleMedium = TYPOGRAPHY.titleMedium.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    titleSmall = TYPOGRAPHY.titleSmall.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    bodyLarge = TYPOGRAPHY.bodyLarge.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    bodyMedium = TYPOGRAPHY.bodyMedium.copy(
+        fontFamily = googleFlex400,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    bodySmall = TYPOGRAPHY.bodySmall.copy(
+        fontFamily = googleFlex400,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    labelLarge = TYPOGRAPHY.labelLarge.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    labelMedium = TYPOGRAPHY.labelMedium.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
+    ),
+    labelSmall = TYPOGRAPHY.labelSmall.copy(
+        fontFamily = googleFlex600,
+        fontFeatureSettings = "ss02, dlig"
     )
 )
 /* Other default text styles to override **/
@@ -64,55 +115,8 @@ val robotoFlexTopAppBar = FontFamily(
     )
 )
 
-val labelSmall = TextStyle(
-    fontFamily = FontFamily.Default,
-    fontWeight = FontWeight.Medium,
-    fontSize = 11.sp,
-    lineHeight = 16.sp,
-    letterSpacing = 0.5.sp
-)
-val googleFlex400 = FontFamily(
-    Font(
-        R.font.google_sans_flex_variable,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(400),
-            FontVariation.Setting("wdth", 100f),
-            FontVariation.Setting("GRAD", 0f)
-        )
-    )
-)
+object AppFonts {
+    val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_variable))
+    val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_variable))
 
-val googleFlex600 = FontFamily(
-    Font(
-        R.font.google_sans_flex_variable,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(600),
-            FontVariation.Setting("wdth", 100f),
-            FontVariation.Setting("GRAD", 0f)
-        )
-    )
-)
-val googleFlexRoundedHeadline = FontFamily(
-    Font(
-        R.font.google_sans_flex_variable,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(660),            // bold-ish
-            FontVariation.Setting("wdth", 96f),  // slight condensation
-            FontVariation.Setting("opsz", 48f),  // display optical size -> rounder shapes
-            FontVariation.Setting("GRAD", 8f)    // small grade change for softer stems
-        )
-    )
-)
-
-// Body — normal opsz, comfortable weight
-val googleFlexRoundedBody = FontFamily(
-    Font(
-        R.font.google_sans_flex_variable,
-        variationSettings = FontVariation.Settings(
-            FontVariation.weight(400),
-            FontVariation.Setting("wdth", 100f),
-            FontVariation.Setting("opsz", 14f),
-            FontVariation.Setting("GRAD", 0f)
-        )
-    )
-)
+}

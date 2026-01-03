@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+google-services.json
+intent-filter
+Test.kt
