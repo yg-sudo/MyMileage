@@ -39,7 +39,7 @@ foundationLayout = "1.10.0"
 material3Version = "1.4.0"
 cameraX = "1.6.0-alpha02"
 firebaseAdmobAds = "0.22.0-beta04"
-vico = "2.4.0"
+vico = "2.4.1"
 
 
 [libraries]
