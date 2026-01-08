@@ -14,6 +14,7 @@ googleOauthClientJetty = "1.39.0"
 googleServices = "4.4.4"
 graphicsShapes = "1.1.0"
 gson = "2.13.2"
+glance = "1.2.0-rc01"
 integrity = "1.6.0"
 kotlin = "2.3.0"
 ksp = "2.3.4"
@@ -39,7 +40,7 @@ foundationLayout = "1.10.0"
 material3Version = "1.4.0"
 cameraX = "1.6.0-alpha02"
 firebaseAdmobAds = "0.22.0-beta04"
-vico = "2.4.0"
+vico = "2.4.1"
 
 
 [libraries]
