@@ -119,6 +119,8 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     /** Room */
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     /** Vico */

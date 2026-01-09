@@ -28,6 +28,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,15 +46,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.PendingActions
@@ -67,7 +74,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -79,6 +88,8 @@ import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
@@ -87,12 +98,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -102,6 +118,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -109,6 +126,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.util.fastForEachIndexed
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
@@ -117,7 +135,7 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
-import com.yg.mileage.ui.theme.MileageCalculatorTheme
+import com.yg.mileage.ui.theme.MyMileageTheme
 import com.yg.mileage.ui.theme.primaryContainerLight
 import com.yg.mileage.ui.theme.primaryLight
 
@@ -125,7 +143,7 @@ class TestActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MileageCalculatorTheme {
+            MyMileageTheme {
                 MainScreen()
             }
         }
@@ -647,23 +665,15 @@ fun TestPreview() {
 fun M3EDropdown() {
 
 }
-fun learning(
-    heck: String,
-    ohno: String,
-) {
+fun learning() {
     // Create new local variables that can be changed
-    var localHeck = heck
-    var localOhno = ohno
+    val heck = "Heck, my phone is dead"
+    val ohNo = "Oh no, my phone is dead"
 
-    // Now you can modify the new variables
-    localHeck = "Heck, my phone is dead"
-    localOhno = "Oh no, my phone is dead"
-
-    if (localHeck == true.toString()) {
-        println(localHeck)
-    }
-    else {
-        println(localOhno)
+    if (heck == "Heck, my phone is dead") {
+        println(heck)
+    } else {
+        println(ohNo)
     }
 }
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -700,4 +710,121 @@ fun ExpressiveBarChartPreview() {
         }
     }
     ExpressiveBarChart(modelProducer = modelProducer)
+}
+@Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+fun thisIsDefinetlyAComposable() {
+    val groupInteractionSource = remember { MutableInteractionSource() }
+    var expanded by remember { mutableStateOf(false) }
+    var homeChecked by remember { mutableStateOf(false) }
+    val groupLabels = listOf("Modification", "Navigation")
+    val groupItemLabels = listOf(listOf("Edit", "Settings"), listOf("Home", "More Options"))
+    val groupItemLeadingIcons =
+        listOf(
+            listOf(Icons.Outlined.Edit, Icons.Outlined.Settings),
+            listOf(null, Icons.Outlined.Info),
+        )
+    val groupItemCheckedLeadingIcons =
+        listOf(
+            listOf(Icons.Filled.Edit, Icons.Filled.Settings),
+            listOf(Icons.Filled.Check, Icons.Filled.Info),
+        )
+    val groupItemTrailingIcons: List<List<ImageVector?>> =
+        listOf(
+            listOf(null, null),
+            listOf(
+                if (homeChecked) {
+                    Icons.Filled.Home
+                } else {
+                    Icons.Outlined.Home
+                },
+                Icons.Filled.MoreVert,
+            ),
+        )
+    val groupItemSupportingText: List<List<String?>> =
+        listOf(listOf("Edit mode", null), listOf(null, "Opens menu"))
+    val checked = remember {
+        listOf(mutableStateListOf(false, false), mutableStateListOf(false, false))
+    }
+
+    Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+        // Icon button should have a tooltip associated with it for a11y.
+        TooltipBox(
+            positionProvider =
+                TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = { PlainTooltip { Text("Localized description") } },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { expanded = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "Localized description")
+            }
+        }
+        DropdownMenuPopup(expanded = expanded, onDismissRequest = { expanded = false }) {
+            val groupCount = groupLabels.size
+            groupLabels.fastForEachIndexed { groupIndex, label ->
+                DropdownMenuGroup(
+                    shapes = MenuDefaults.groupShape(groupIndex, groupCount),
+                    interactionSource = groupInteractionSource,
+                ) {
+                    MenuDefaults.Label { Text(label) }
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.padding(horizontal = MenuDefaults.HorizontalDividerPadding)
+                    )
+                    val groupItemCount = groupItemLabels[groupIndex].size
+                    groupItemLabels[groupIndex].fastForEachIndexed { itemIndex, itemLabel ->
+                        DropdownMenuItem(
+                            text = {
+                                val itemSupportingText =
+                                    groupItemSupportingText[groupIndex][itemIndex]
+                                if (itemSupportingText != null) {
+                                    MenuDefaults.LabelWithSupportingText(
+                                        supportingText = { Text(itemSupportingText) }
+                                    ) {
+                                        Text(itemLabel)
+                                    }
+                                } else {
+                                    Text(itemLabel)
+                                }
+                            },
+                            shapes = MenuDefaults.itemShape(itemIndex, groupItemCount),
+                            leadingIcon =
+                                groupItemLeadingIcons[groupIndex][itemIndex]?.let { iconData ->
+                                    { Icon(iconData, contentDescription = null) }
+                                },
+                            checkedLeadingIcon = {
+                                Icon(
+                                    groupItemCheckedLeadingIcons[groupIndex][itemIndex],
+                                    contentDescription = null,
+                                )
+                            },
+                            trailingIcon =
+                                groupItemTrailingIcons[groupIndex][itemIndex]?.let { iconData ->
+                                    { Icon(iconData, contentDescription = null) }
+                                },
+                            checked = checked[groupIndex][itemIndex],
+                            onCheckedChange = { checked[groupIndex][itemIndex] = it },
+                        )
+                    }
+                }
+
+                if (groupIndex != groupCount - 1) {
+                    Spacer(Modifier.height(MenuDefaults.GroupSpacing))
+                }
+            }
+            if (checked.last().last()) {
+                DropdownMenuGroup(
+                    shapes = TODO(),
+                    modifier = TODO(),
+                    containerColor = TODO(),
+                    tonalElevation = TODO(),
+                    shadowElevation = TODO(),
+                    border = TODO(),
+                    contentPadding = TODO(),
+                    interactionSource = TODO(),
+                    content = TODO()
+                )
+            }
+        }
+    }
 }

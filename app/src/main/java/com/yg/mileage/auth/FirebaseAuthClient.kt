@@ -206,6 +206,17 @@ class FirebaseAuthClient(
         }
     }
 
+    // Password Reset
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Result.failure(e)
+        }
+    }
+
     // Phone Sign-In
     fun verifyPhoneNumber(
         activity: Activity,
