@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun MileageCalculatorTheme(
+fun MyMileageTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

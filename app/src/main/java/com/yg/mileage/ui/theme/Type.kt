@@ -119,4 +119,4 @@ object AppFonts {
     val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_variable))
     val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_variable))
 
-}
+   }
