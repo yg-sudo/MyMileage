@@ -38,6 +38,7 @@ data class TripEntity(
     val fuelCost: Double?,
     val fuelPricePerUnit: Double?,
     val currencyId: String?,
+    val tripGroup: String?,
     val status: TripStatus,
     val createdAt: Date,
     val updatedAt: Date
@@ -55,6 +56,7 @@ data class TripEntity(
             fuelCost = fuelCost,
             fuelPricePerUnit = fuelPricePerUnit,
             currencyId = currencyId,
+            tripGroup = tripGroup,
             status = status,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -76,6 +78,7 @@ data class TripEntity(
                 fuelCost = trip.fuelCost,
                 fuelPricePerUnit = trip.fuelPricePerUnit,
                 currencyId = trip.currencyId,
+                tripGroup = trip.tripGroup,
                 status = trip.status,
                 createdAt = trip.createdAt,
                 updatedAt = trip.updatedAt

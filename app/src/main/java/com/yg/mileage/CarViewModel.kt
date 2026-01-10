@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.yg.mileage.auth.SignInResult
 import com.yg.mileage.auth.UserData
 import com.yg.mileage.data.Repository
+import com.yg.mileage.data.TripGroupEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -168,6 +169,22 @@ class CarViewModel(
     suspend fun deleteTrip(tripId: String) {
         currentUserId?.let { repository.deleteTrip(tripId, it) }
     }
+
+    suspend fun saveTripGroup(groupName: String) {
+        val userId = currentUserId
+        if (userId != null) {
+            val now = java.util.Date()
+            val newGroup = TripGroupEntity(
+                id = java.util.UUID.randomUUID().toString(),
+                userId = userId,
+                groupName = groupName,
+                createdAt = now,
+                updatedAt = now
+            )
+            repository.saveTripGroup(newGroup)
+        }
+    }
+
     suspend fun continueTrip() {
 
     }

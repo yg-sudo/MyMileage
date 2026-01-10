@@ -36,6 +36,7 @@ class Repository(
 ) {
     private val vehicleDao = database.vehicleDao()
     private val tripDao = database.tripDao()
+    private val tripGroupDao = database.tripGroupDao()
     private val currencyDao = database.currencyDao()
     private val fuelPriceDao = database.fuelPriceDao()
 
@@ -91,6 +92,11 @@ class Repository(
     suspend fun deleteTrip(tripId: String, userId: String) {
         val trip = tripDao.getTripById(tripId, userId)
         trip?.let { tripDao.deleteTrip(it) }
+    }
+
+    // --- TRIP GROUP ---
+    suspend fun saveTripGroup(tripGroup: TripGroupEntity) {
+        tripGroupDao.insertTripGroup(tripGroup)
     }
 
     // --- CURRENCY ---

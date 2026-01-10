@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TripGroupDao {
     @Insert
-    suspend fun insert(tripGroup: TripGroupEntity)
+    suspend fun insertTripGroup(tripGroup: TripGroupEntity)
 
     @Query("SELECT * FROM tripGroup WHERE userId = :userId ORDER BY createdAt DESC")
     fun getAllTripGroups(userId: String): Flow<List<TripGroupEntity>>
