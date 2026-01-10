@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ArrowCircleRight
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FilterList
@@ -87,9 +86,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yg.mileage.ui.theme.MyMileageShapeDefaults
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -101,8 +103,45 @@ fun TripLogScreen(
 ) {
     val trips by carViewModel.savedTrips.collectAsState()
     val defaultCurrency by carViewModel.defaultCurrency.collectAsState()
-    val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
+    val coroutineScope = rememberCoroutineScope()
 
+    TripLogContent(
+        modifier = modifier,
+        trips = trips,
+        defaultCurrency = defaultCurrency,
+        onNavigateToTripDetails = onNavigateToTripDetails,
+        onEditTrip = { trip ->
+            carViewModel.setEditingTrip(trip)
+            onNavigateToTripDetails()
+        },
+        onDeleteTrip = { tripId ->
+            coroutineScope.launch {
+                carViewModel.deleteTrip(tripId)
+            }
+        },
+        onNewTrip = {
+            carViewModel.setEditingTrip(null)
+            onNavigateToTripDetails()
+        },
+        onNewGroupTrip = {
+            // TODO: Add group trip logic to viewmodel
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun TripLogContent(
+    modifier: Modifier = Modifier,
+    trips: List<Trip>,
+    defaultCurrency: Currency?,
+    onNavigateToTripDetails: () -> Unit,
+    onEditTrip: (Trip) -> Unit,
+    onDeleteTrip: (String) -> Unit,
+    onNewTrip: () -> Unit,
+    onNewGroupTrip: () -> Unit
+) {
+    val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
     var filterIndex by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -128,7 +167,6 @@ fun TripLogScreen(
                         showBottomSheet = false
                     }
                 }
-                // TODO: Apply filter logic
             })
         }
     }
@@ -172,20 +210,8 @@ fun TripLogScreen(
                             trip = trip,
                             dateFormat = dateFormat,
                             defaultCurrency = defaultCurrency,
-                            onEdit = {
-                                carViewModel.setEditingTrip(trip)
-                                onNavigateToTripDetails()
-                            },
-                            onDelete = {
-                                coroutineScope.launch {
-                                    carViewModel.deleteTrip(trip.id)
-                                }
-                            },
-                            onContinue = {
-                                coroutineScope.launch {
-                                    carViewModel.continueTrip()
-                                }
-                            }
+                            onEdit = { onEditTrip(trip) },
+                            onDelete = { onDeleteTrip(trip.id) }
                         )
                     }
                 }
@@ -202,6 +228,7 @@ fun TripLogScreen(
                     .padding(16.dp),
                 expanded = fabMenuExpanded,
                 button = {
+                    val containerColor = MaterialTheme.colorScheme.primaryContainer
                     ToggleFloatingActionButton(
                         modifier = Modifier
                             .semantics {
@@ -212,6 +239,7 @@ fun TripLogScreen(
                                 visible = true, alignment = Alignment.BottomEnd
                             ),
                         checked = fabMenuExpanded,
+                        containerColor = { containerColor }, // Fixed: Capture color outside the lambda
                         onCheckedChange = { fabMenuExpanded = !fabMenuExpanded }
                     ) {
                         val imageVector by remember {
@@ -233,8 +261,7 @@ fun TripLogScreen(
                 FloatingActionButtonMenuItem(
                     onClick = {
                         fabMenuExpanded = false
-                        carViewModel.setEditingTrip(null)
-                        onNavigateToTripDetails()
+                        onNewTrip()
                     },
                     icon = {
                         Icon(
@@ -245,22 +272,20 @@ fun TripLogScreen(
                     text = { Text(text = "New Trip") },
                 )
 
-                // --- Item 2: New Group Trip (Newly Added) ---
+                // --- Item 2: New Group Trip ---
                 FloatingActionButtonMenuItem(
                     onClick = {
                         fabMenuExpanded = false
-                        // TODO: Add your viewmodel logic for group trip
+                        onNewGroupTrip()
                     },
                     icon = {
                         Icon(
-                            imageVector = Icons.Rounded.GroupAdd, // <-- New Icon
+                            imageVector = Icons.Rounded.GroupAdd,
                             contentDescription = "New Group Trip"
                         )
                     },
-                    text = { Text(text = "New Group Trip") }, // <-- New Text
+                    text = { Text(text = "New Group Trip") },
                 )
-
-                // You can continue to add more items here...
             }
         }
     }
@@ -332,8 +357,7 @@ fun TripCard(
     dateFormat: SimpleDateFormat,
     defaultCurrency: Currency?,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onContinue: () -> Unit
+    onDelete: () -> Unit
 ) {
     val isDraft = trip.status == TripStatus.DRAFT
     val cardColor = if (isDraft)
@@ -343,16 +367,9 @@ fun TripCard(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = MyMileageShapeDefaults.cardShape(),
+        shape = MyMileageShapeDefaults.cardShape, // Fixed: accessing as property
         colors = CardDefaults.cardColors(containerColor = cardColor),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 0.dp,
-            focusedElevation = 0.dp,
-            hoveredElevation = 0.dp,
-            draggedElevation = 0.dp,
-            disabledElevation = 0.dp
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -373,13 +390,6 @@ fun TripCard(
                     modifier = Modifier.weight(1f)
                 )
                 Row {
-                    IconButton(onClick = onContinue) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowCircleRight,
-                            "Continue",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
                     IconButton(onClick = onEdit) {
                         Icon(
                             imageVector = Icons.Rounded.Edit,
@@ -394,7 +404,7 @@ fun TripCard(
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
-                    IconButton(onClick = { TODO() }) {
+                    IconButton(onClick = { /* Share logic */ } ) {
                         Icon(
                             imageVector = Icons.Rounded.Share,
                             contentDescription = "Share",
@@ -465,4 +475,54 @@ fun FilterBottomSheetContent(onApply: () -> Unit) {
     Spacer(modifier = Modifier.padding(25.dp))
     Text(text = "                              :)")
     Spacer(modifier = Modifier.padding(25.dp))
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HistoryPreview() {
+    val sampleTrips = listOf(
+        Trip(
+            id = "1",
+            vehicleId = "v1",
+            vehicleName = "Fortuner",
+            startMileage = 10000.0,
+            endMileage = 10500.0,
+            fuelFilled = 50.0,
+            tripDistance = 500.0,
+            fuelEfficiency = 10.0,
+            fuelCost = 5000.0,
+            fuelPricePerUnit = 100.0,
+            currencyId = "INR",
+            status = TripStatus.COMPLETED,
+            createdAt = Date(),
+            updatedAt = Date()
+        ),
+        Trip(
+            id = "2",
+            vehicleId = "v1",
+            vehicleName = "Fortuner",
+            startMileage = 10500.0,
+            endMileage = null,
+            fuelFilled = 40.0,
+            tripDistance = null,
+            fuelEfficiency = null,
+            fuelCost = null,
+            fuelPricePerUnit = 110.0,
+            currencyId = "INR",
+            status = TripStatus.DRAFT,
+            createdAt = Date(),
+            updatedAt = Date()
+        )
+    )
+    MaterialTheme {
+        TripLogContent(
+            trips = sampleTrips,
+            defaultCurrency = Currency("inr", "INR", "Indian Rupee", "₹", true),
+            onNavigateToTripDetails = {},
+            onEditTrip = {},
+            onDeleteTrip = {},
+            onNewTrip = {},
+            onNewGroupTrip = {}
+        )
+    }
 }

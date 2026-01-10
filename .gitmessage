@@ -1,0 +1,13 @@
+# <type>(<scope>): <subject>
+#
+# Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+# Scope: ui, db, auth, gradle, mileage-calc, etc.
+# Subject: Imperative mood, max 50 chars (e.g., "add dark mode support")
+#
+# Example: feat(ui): add material 3 dynamic color support
+
+# Body: Explain *what* and *why* (not how). Wrap at 72 chars.
+#
+
+# Footer: Refer to issues (e.g., "Closes #123") or breaking changes.
+#
