@@ -1,0 +1,24 @@
+name: MyMileage
+id: ari:cloud:compass:ee12d177-2eb4-4615-90ea-db9718cbee8a:component/05dd38ca-a6cc-4ec4-8e2e-5420d4d3bdd9/bd203c49-4034-4b60-9abe-a880903e7916
+description: 🚀 MyMileage – Your Smart Vehicle Mileage Tracker
+configVersion: 1
+typeId: APPLICATION
+ownerId: ari:cloud:identity::team/b0fde289-0c5e-49c4-8b04-450ec007fc8b
+fields:
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: https://github.com/ygllc/MyMileage
+relationships:
+  DEPENDS_ON: []
+labels:
+  - cars
+  - language:kotlin
+  - material-3-expressive
+  - material-design-3-expressive
+  - material3-expressive
+  - source:github
+  - trips
+  - vehicles
+customFields: null
