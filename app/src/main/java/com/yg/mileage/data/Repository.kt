@@ -139,6 +139,17 @@ class Repository(
         fuelPriceDao.deleteFuelPrice(FuelPriceEntity.fromFuelPrice(fuelPrice))
     }
 
+    // --- TRIP GROUPS ---
+    private val tripGroupDao = database.tripGroupDao()
+
+    fun getAllTripGroups(userId: String): Flow<List<TripGroupEntity>> {
+        return tripGroupDao.getAllTripGroups(userId)
+    }
+
+    suspend fun addTripGroup(tripGroup: TripGroupEntity) {
+        tripGroupDao.insert(tripGroup)
+    }
+
     // --- Optional: Google Drive Backup (Only for Google Users) ---
     suspend fun backupTripsToDrive(userId: String, accountEmail: String): Boolean {
         return try {

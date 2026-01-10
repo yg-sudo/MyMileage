@@ -210,3 +210,27 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
         db.execSQL("INSERT INTO tripGroup (id, userId, groupName, createdAt, updatedAt) VALUES ('$id', '$userId', '$groupName', $now, $now)")
     }
 }
+
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Add tripGroupId to trips table
+        // Helper to check for column existence
+        fun hasColumn(db: SupportSQLiteDatabase, tableName: String, columnName: String): Boolean {
+            val cursor = db.query("PRAGMA table_info($tableName)")
+            val colIndex = cursor.getColumnIndex("name")
+            var result = false
+            while (cursor.moveToNext()) {
+                if (cursor.getString(colIndex) == columnName) {
+                    result = true
+                    break
+                }
+            }
+            cursor.close()
+            return result
+        }
+
+        if (!hasColumn(db, "trips", "tripGroupId")) {
+            db.execSQL("ALTER TABLE trips ADD COLUMN tripGroupId TEXT")
+        }
+    }
+}
