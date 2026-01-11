@@ -78,7 +78,7 @@ import com.yg.mileage.auth.SignUpScreen
 import com.yg.mileage.data.Repository
 import com.yg.mileage.navigation.Screen
 import com.yg.mileage.navigation.bottomNavItems
-import com.yg.mileage.ui.theme.MileageCalculatorTheme
+import com.yg.mileage.ui.theme.MyMileageTheme
 import com.yg.mileage.ui.theme.robotoFlexTopAppBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             } else {
-                MileageCalculatorTheme {
+                MyMileageTheme {
                     val navController = rememberNavController()
                     val startDestination = if (currentUser == null) Screen.SignIn.route else Screen.Trips.route
                     var currentScreenTitle by remember { mutableStateOf(Screen.Trips.label) }
@@ -255,11 +255,11 @@ class MainActivity : ComponentActivity() {
                                     carViewModel.onSignInResult(result)
                                     if (result.errorMessage != null) {
                                         Toast.makeText(this@MainActivity, result.errorMessage, Toast.LENGTH_LONG).show()
-                                     } else {
+                                    } else {
                                         navController.navigate(Screen.Trips.route) {
                                             popUpTo(0)
                                         }
-                                     }
+                                    }
                                 }
                             },
                             onSendOtpClick = { phoneNumber ->
@@ -350,7 +350,21 @@ fun AppNavHost(
                 onEmailSignInClick = onEmailSignInClick,
                 onGoogleSignInClick = onGoogleSignInClick,
                 onMicrosoftSignInClick = onMicrosoftSignInClick,
-                onSignUpClick = { navController.navigate(Screen.SignUp.route) }
+                onSignUpClick = { navController.navigate(Screen.SignUp.route) },
+                onForgotPasswordClick = { email ->
+                    if (email.isBlank()) {
+                        Toast.makeText(context, "Please enter your email address to reset password", Toast.LENGTH_LONG).show()
+                    } else {
+                        coroutineScope.launch {
+                            val result = firebaseAuthClient.sendPasswordResetEmail(email)
+                            if (result.isSuccess) {
+                                Toast.makeText(context, "Password reset email sent", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(context, "Failed to send reset email: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
             )
         }
         composable(Screen.SignUp.route) {
@@ -457,7 +471,7 @@ fun AppNavHost(
         composable(Screen.SecuritySettings.route) { SecuritySettingsScreen(carViewModel = carViewModel) }
         composable(Screen.CurrencySettings.route) { CurrencySettingsScreen(carViewModel = carViewModel) }
         composable(Screen.Activities.route) { ActivitiesScreen(carViewModel = carViewModel) }
-        }
+    }
 }
 
 
@@ -465,7 +479,7 @@ fun AppNavHost(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MileageCalculatorTheme {
+    MyMileageTheme {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("App Preview Root")
         }

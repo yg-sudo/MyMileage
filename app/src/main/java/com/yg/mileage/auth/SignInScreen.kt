@@ -70,7 +70,8 @@ fun SignInScreen(
     onEmailSignInClick: (String, String) -> Unit,
     onGoogleSignInClick: () -> Unit,
     onMicrosoftSignInClick: () -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onForgotPasswordClick: (String) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -177,7 +178,7 @@ fun SignInScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     TextButton(
-                        onClick = { /* Handle forgot password */ },
+                        onClick = { onForgotPasswordClick(email) },
                         modifier = Modifier.align(Alignment.End),
                         colors = ButtonDefaults.textButtonColors(contentColor = MyMileage)
                     ) {
@@ -200,5 +201,11 @@ fun SignInScreen(
 @Preview(showBackground = true)
 @Composable
 fun SignInScreenPreview() {
-    SignInScreen(onEmailSignInClick = { _, _ -> }, onGoogleSignInClick = {}, onMicrosoftSignInClick = {}, onSignUpClick = {})
+    SignInScreen(
+        onEmailSignInClick = { _, _ -> },
+        onGoogleSignInClick = {},
+        onMicrosoftSignInClick = {},
+        onSignUpClick = {},
+        onForgotPasswordClick = {}
+    )
 }

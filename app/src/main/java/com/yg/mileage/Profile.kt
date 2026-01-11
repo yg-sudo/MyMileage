@@ -19,7 +19,6 @@
 package com.yg.mileage
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,10 +41,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
@@ -67,13 +69,31 @@ fun ProfileScreen(
     onDeleteVehicle: (String) -> Unit,
     canDeleteVehicle: (String) -> Boolean
 ) {
+    Scaffold(
+        floatingActionButton = {
+            LargeFloatingActionButton(
+                onClick = { navController.navigate("add_vehicle") },
+                shape = MaterialShapes.Cookie9Sided.toShape(),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add Vehicle",
+                    modifier = Modifier.size(FloatingActionButtonDefaults.LargeIconSize)
+                )
+            }
+        },
+        containerColor = Color.Transparent
+    ) { innerPadding ->
         Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
             // Settings Section
-// Single-row card (now rendered as a grouped container with a bottom-shaped row)
+            // Single-row card (now rendered as a grouped container with a bottom-shaped row)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,38 +145,6 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                // Add Vehicle Card
-                item {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(120.dp),
-                        onClick = { navController.navigate("add_vehicle") }
-                    ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Add,
-                                    contentDescription = "Add Vehicle",
-                                    modifier = Modifier.size(32.dp),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Add Vehicle",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                    }
-                }
-
                 // Vehicle Cards
                 items(savedVehicles) { vehicle ->
                     VehicleCard(
@@ -169,6 +157,7 @@ fun ProfileScreen(
             }
         }
     }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -182,7 +171,8 @@ fun VehicleCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(120.dp),
+        shape = MaterialShapes.Slanted.toShape()
     ) {
         Column(
             modifier = Modifier

@@ -9,7 +9,7 @@ MyMileage is a modern Android app that makes tracking your vehicleâ€™s mileage ð
 ![GitHub Release](https://img.shields.io/github/v/release/yg-sudo/MyMileage?include_prereleases&logo=github&logoSize=auto&link=https%3A%2F%2Fwww.github.com%2Fyg-sudo%2FMyMileage%2Freleases)
 ![Static Badge](https://img.shields.io/badge/API-26-blue?logo=android&logoColor=%2359AA68)
 ![GitHub License](https://img.shields.io/github/license/yg-sudo/MyMileage?logo=gnu&link=https%3A%2F%2Fwww.gnu.org%2Flicenses%2Fgpl-3.0.en.html)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/yg-sudo/MyMileage/codeql.yml?branch=master&logo=gradle)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/yg-sudo/MyMileage/debug.yml?branch=master&logo=gradle)
 
 <img width="239" height="71" alt="GetItOnGooglePlay_Badge_Web_color_English" src="https://github.com/user-attachments/assets/4dddbe98-ba72-4285-bb9d-87641528dfbc" />
 </div>
