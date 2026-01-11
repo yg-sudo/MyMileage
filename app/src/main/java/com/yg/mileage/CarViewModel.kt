@@ -201,6 +201,22 @@ class CarViewModel(
     suspend fun deleteTrip(tripId: String) {
         currentUserId?.let { repository.deleteTrip(tripId, it) }
     }
+
+    suspend fun saveTripGroup(groupName: String) {
+        val userId = currentUserId
+        if (userId != null) {
+            val now = java.util.Date()
+            val newGroup = TripGroupEntity(
+                id = java.util.UUID.randomUUID().toString(),
+                userId = userId,
+                groupName = groupName,
+                createdAt = now,
+                updatedAt = now
+            )
+            repository.saveTripGroup(newGroup)
+        }
+    }
+
     suspend fun continueTrip() {
 
     }

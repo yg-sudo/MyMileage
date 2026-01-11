@@ -53,6 +53,8 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -219,6 +221,7 @@ fun TripLogContent(
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showGroupTripDialog by remember { mutableStateOf(false) }
 
     // Prepare list items
     val historyItems = remember(trips, tripGroups, filterIndex) {
@@ -308,6 +311,43 @@ fun TripLogContent(
                 }
             })
         }
+    }
+
+    if (showGroupTripDialog) {
+        var groupName by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showGroupTripDialog = false },
+            title = { Text(text = "New Group Trip") },
+            text = {
+                OutlinedTextField(
+                    value = groupName,
+                    onValueChange = { groupName = it },
+                    label = { Text("Group Name") },
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (groupName.isNotBlank()) {
+                            coroutineScope.launch {
+                                carViewModel.saveTripGroup(groupName)
+                            }
+                            showGroupTripDialog = false
+                        }
+                    }
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showGroupTripDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Box(
@@ -447,7 +487,7 @@ fun TripLogContent(
                 FloatingActionButtonMenuItem(
                     onClick = {
                         fabMenuExpanded = false
-                        onNewGroupTrip()
+                        showGroupTripDialog = true
                     },
                     icon = {
                         Icon(
