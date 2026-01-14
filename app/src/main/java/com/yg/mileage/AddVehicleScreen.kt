@@ -60,25 +60,25 @@ fun AddVehicleScreen(
     onSaveVehicle: (Vehicle) -> Unit,
     vehicleToEdit: Vehicle? = null
 ) {
-    var vehicleName by remember { 
-        mutableStateOf(TextFieldValue(vehicleToEdit?.name ?: "")) 
+    var vehicleName by remember {
+        mutableStateOf(TextFieldValue(vehicleToEdit?.name ?: ""))
     }
-    var make by remember { 
-        mutableStateOf(TextFieldValue(vehicleToEdit?.make ?: "")) 
+    var make by remember {
+        mutableStateOf(TextFieldValue(vehicleToEdit?.make ?: ""))
     }
-    var model by remember { 
-        mutableStateOf(TextFieldValue(vehicleToEdit?.model ?: "")) 
+    var model by remember {
+        mutableStateOf(TextFieldValue(vehicleToEdit?.model ?: ""))
     }
-    var year by remember { 
-        mutableStateOf(TextFieldValue(vehicleToEdit?.year ?: "")) 
+    var year by remember {
+        mutableStateOf(TextFieldValue(vehicleToEdit?.year ?: ""))
     }
-    var fuelType by remember { 
-        mutableStateOf(vehicleToEdit?.fuelType) 
+    var fuelType by remember {
+        mutableStateOf(vehicleToEdit?.fuelType)
     }
-    var registrationNumber by remember { 
-        mutableStateOf(TextFieldValue(vehicleToEdit?.registrationNumber ?: "")) 
+    var registrationNumber by remember {
+        mutableStateOf(TextFieldValue(vehicleToEdit?.registrationNumber ?: ""))
     }
-    
+
     var isError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var fuelTypeError by remember { mutableStateOf(false) }
@@ -94,7 +94,7 @@ fun AddVehicleScreen(
         // Vehicle Name TextField (Required)
         OutlinedTextField(
             value = vehicleName,
-            onValueChange = { 
+            onValueChange = {
                 vehicleName = it
                 isError = false
                 errorMessage = ""
@@ -209,9 +209,9 @@ fun AddVehicleScreen(
             ) {
                 Text("Cancel")
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Button(
                 onClick = {
                     val name = vehicleName.text.trim()

@@ -161,13 +161,15 @@ fun TripLogContent(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
-            FilterBottomSheetContent(onApply = {
-                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        showBottomSheet = false
+            FilterBottomSheetContent(
+                onApply = {
+                    coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            showBottomSheet = false
+                        }
                     }
                 }
-            })
+            )
         }
     }
 
@@ -404,7 +406,7 @@ fun TripCard(
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
-                    IconButton(onClick = { /* Share logic */ } ) {
+                    IconButton(onClick = { /* Share logic */ }) {
                         Icon(
                             imageVector = Icons.Rounded.Share,
                             contentDescription = "Share",

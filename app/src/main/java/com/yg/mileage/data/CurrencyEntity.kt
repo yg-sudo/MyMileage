@@ -52,6 +52,3 @@ data class CurrencyEntity(
         }
     }
 }
-
-
-

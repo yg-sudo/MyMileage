@@ -29,7 +29,6 @@ import com.yg.mileage.R
 import com.yg.mileage.ui.theme.AppFonts.googleFlex400
 import com.yg.mileage.ui.theme.AppFonts.googleFlex600
 
-
 val RobotoFlex = FontFamily(Font(R.font.roboto_flex_variable))
 // Set of Material typography styles to start with
 val TYPOGRAPHY = Typography()
@@ -118,5 +117,4 @@ val robotoFlexTopAppBar = FontFamily(
 object AppFonts {
     val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_variable))
     val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_variable))
-
-   }
+}

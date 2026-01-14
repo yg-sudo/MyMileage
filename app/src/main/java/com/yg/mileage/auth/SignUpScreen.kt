@@ -147,7 +147,7 @@ fun SignUpScreen(
                         onClick = { onSignUpClick(email, password) },
                         modifier = Modifier
                             .fillMaxWidth()
-                           .height(50.dp),
+                            .height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MyMileage),
                     ) {
                         Text("Sign up", fontSize = 16.sp)

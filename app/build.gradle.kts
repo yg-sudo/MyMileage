@@ -43,7 +43,7 @@ android {
         }
     }
 
-signingConfigs {
+    signingConfigs {
         create("release") {
             val keystoreFile = System.getenv("APP_UPLOAD_KEYSTORE_FILE")
             val keystorePassword = System.getenv("APP_UPLOAD_STORE_PASSWORD")
@@ -97,7 +97,6 @@ signingConfigs {
         }
     }
 }
-
 
 dependencies {
     /** Coil */

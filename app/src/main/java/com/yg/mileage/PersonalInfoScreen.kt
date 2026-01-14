@@ -106,7 +106,6 @@ fun PersonalInfoScreen(carViewModel: CarViewModel) {
                 )
             )
         ) {
-
         }
         // Top item - use topListItemShape and make the whole surface clickable
         Surface(

@@ -84,14 +84,14 @@ fun AccountScreen(
     onSendOtpClick: (String) -> Unit,
     onVerifyOtpClick: (String) -> Unit,
     onNavigateToPersonalInfo: () -> Unit, // New parameter
-    onNavigateToSecurity: () -> Unit     // New parameter
+    onNavigateToSecurity: () -> Unit // New parameter
 ) {
     if (currentUser != null) {
         SignedInAccountScreen(
             currentUser = currentUser,
             onSignOutClick = onSignOutClick,
             onNavigateToPersonalInfo = onNavigateToPersonalInfo, // Passed through
-            onNavigateToSecurity = onNavigateToSecurity         // Passed through
+            onNavigateToSecurity = onNavigateToSecurity // Passed through
         )
     } else {
         SignedOutAccountScreen(
@@ -110,7 +110,7 @@ fun SignedInAccountScreen(
     currentUser: UserData,
     onSignOutClick: () -> Unit,
     onNavigateToPersonalInfo: () -> Unit, // New parameter
-    onNavigateToSecurity: () -> Unit     // New parameter
+    onNavigateToSecurity: () -> Unit // New parameter
 ) {
     Column(
         modifier = Modifier
@@ -410,10 +410,10 @@ fun PhoneSignInTab(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Work In Progress",
-            style = MaterialTheme.typography.bodySmall)
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
-
 
 // --- PREVIEWS ---
 @Preview(showBackground = true, name = "Signed In")
@@ -424,12 +424,12 @@ fun AccountScreenPreview_UserLoggedIn() {
         currentUser = user,
         onSignOutClick = {},
         onGoogleSignInClick = {},
-        onEmailSignInClick = {_,_ ->},
-        onEmailSignUpClick = {_,_ ->},
+        onEmailSignInClick = { _, _ -> },
+        onEmailSignUpClick = { _, _ -> },
         onSendOtpClick = {},
         onVerifyOtpClick = {},
         onNavigateToPersonalInfo = {}, // Added for preview
-        onNavigateToSecurity = {}     // Added for preview
+        onNavigateToSecurity = {} // Added for preview
     )
 }
 
@@ -440,11 +440,11 @@ fun AccountScreenPreview_UserLoggedOut() {
         currentUser = null,
         onSignOutClick = {},
         onGoogleSignInClick = {},
-        onEmailSignInClick = {_,_ ->},
-        onEmailSignUpClick = {_,_ ->},
+        onEmailSignInClick = { _, _ -> },
+        onEmailSignUpClick = { _, _ -> },
         onSendOtpClick = {},
         onVerifyOtpClick = {},
         onNavigateToPersonalInfo = {}, // Added for preview
-        onNavigateToSecurity = {}     // Added for preview
+        onNavigateToSecurity = {} // Added for preview
     )
 }
