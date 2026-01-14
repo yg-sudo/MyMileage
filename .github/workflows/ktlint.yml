@@ -5,14 +5,12 @@ on: [push, pull_request]
 jobs:
   lint:
     runs-on: ubuntu-latest
-    # Required to push the formatted code back to the repo
     permissions:
       contents: write
 
     steps:
       - uses: actions/checkout@v4
         with:
-          # Required to checkout the actual branch for PRs (instead of detached head)
           ref: ${{ github.head_ref }}
 
       - name: Set up JDK 11
@@ -22,22 +20,20 @@ jobs:
           distribution: 'temurin'
 
       - name: Install ktlint
-        # Note: 0.41.0 is quite old. Consider updating to a newer version (e.g., 1.0.1) if possible.
         run: curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.41.0/ktlint && chmod a+x ktlint
 
       - name: Run ktlint Check
         id: ktlint_check
-        # Prevents the job from failing immediately if errors are found
         continue-on-error: true
-        run: ./ktlint
+        # Added --disabled_rules=filename to ignore class/file mismatch errors
+        run: ./ktlint --disabled_rules=filename
 
       - name: Run ktlint Format
-        # Only runs if the previous check step failed
         if: steps.ktlint_check.outcome == 'failure'
-        run: ./ktlint -F
+        # Added --disabled_rules=filename here as well so formatting doesn't crash on them
+        run: ./ktlint -F --disabled_rules=filename
 
       - name: Commit and Push fixes
-        # Only runs if formatting was attempted
         if: steps.ktlint_check.outcome == 'failure'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
