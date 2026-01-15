@@ -40,4 +40,4 @@ data class Trip(
 enum class TripStatus {
     DRAFT,
     COMPLETED
-} 
+}
