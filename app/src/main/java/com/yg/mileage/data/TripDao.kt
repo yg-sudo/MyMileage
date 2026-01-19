@@ -37,7 +37,8 @@ data class TripWithVehicle(
 
 @Dao
 interface TripDao {
-    @Query("""
+    @Query(
+        """
         SELECT 
             trips.*,
             vehicles.id AS v_id,
@@ -54,7 +55,8 @@ interface TripDao {
         FROM trips 
         INNER JOIN vehicles ON trips.vehicleId = vehicles.id 
         WHERE trips.userId = :userId ORDER BY trips.updatedAt DESC
-        """)
+        """
+    )
     fun getAllTripsForUser(userId: String): Flow<List<TripWithVehicle>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

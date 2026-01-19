@@ -137,7 +137,6 @@ fun ProfileScreen(
                 }
             }
 
-
             // Grid of vehicles
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -158,7 +157,6 @@ fun ProfileScreen(
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

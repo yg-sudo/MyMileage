@@ -271,52 +271,58 @@ fun SplitButtonDemo() {
             .fillMaxSize()
             .wrapContentSize()
     ) {
-        SplitButtonLayout(leadingButton = {
-            SplitButtonDefaults.LeadingButton(
-                onClick = { },
-            ) {
-                Icon(
-                    Icons.Filled.Edit,
-                    modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
-                    contentDescription = "Localized description",
-                )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("My Button")
+        SplitButtonLayout(
+            leadingButton = {
+                SplitButtonDefaults.LeadingButton(
+                    onClick = { },
+                ) {
+                    Icon(
+                        Icons.Filled.Edit,
+                        modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
+                        contentDescription = "Localized description",
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("My Button")
+                }
+            },
+            trailingButton = {
+                SplitButtonDefaults.TrailingButton(
+                    checked = checked2,
+                    onCheckedChange = { checked2 = it },
+                ) {
+                    val rotation: Float by animateFloatAsState(
+                        targetValue = if (checked2) 180f else 0f, label = "Trailing Icon Rotation"
+                    )
+                    Icon(
+                        Icons.Filled.KeyboardArrowDown,
+                        modifier = Modifier
+                            .size(SplitButtonDefaults.TrailingIconSize)
+                            .graphicsLayer {
+                                this.rotationZ = rotation
+                            },
+                        contentDescription = "Localized description"
+                    )
+                }
             }
-        }, trailingButton = {
-            SplitButtonDefaults.TrailingButton(
-                checked = checked2,
-                onCheckedChange = { checked2 = it },
-            ) {
-                val rotation: Float by animateFloatAsState(
-                    targetValue = if (checked2) 180f else 0f, label = "Trailing Icon Rotation"
-                )
-                Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    modifier = Modifier
-                        .size(SplitButtonDefaults.TrailingIconSize)
-                        .graphicsLayer {
-                            this.rotationZ = rotation
-                        },
-                    contentDescription = "Localized description"
-                )
-            }
-        })
+        )
 
         DropdownMenu(expanded = checked2, onDismissRequest = { checked2 = false }) {
             DropdownMenuItem(
                 text = { Text("Edit") },
                 onClick = {},
-                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) })
+                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) }
+            )
             DropdownMenuItem(
                 text = { Text("Settings") },
                 onClick = {},
-                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) })
+                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) }
+            )
             HorizontalDivider()
             DropdownMenuItem(
                 text = { Text("Send Feedback") },
                 onClick = {},
-                leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) })
+                leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) }
+            )
         }
     }
 }
@@ -360,16 +366,16 @@ fun SplitButton() {
                 label = label,
             )
         }
-}
-
-@Composable
-fun MLKitTextRecognitionButton() {
-    Button(
-        onClick = {  },
-    ) {
-        Text("Recognize Text")
     }
-  }
+
+    @Composable
+    fun MLKitTextRecognitionButton() {
+        Button(
+            onClick = { },
+        ) {
+            Text("Recognize Text")
+        }
+    }
 }
 @Preview(showSystemUi = true)
 @Composable
@@ -407,7 +413,7 @@ fun BlankSettingsContainer() {
                 .height(64.dp)
         ) {}
     }
-Spacer(modifier = Modifier.height(100.dp))
+    Spacer(modifier = Modifier.height(100.dp))
     Text(text = "Test")
 }
 data class AbsoluteSmoothCornerShape(
@@ -604,7 +610,7 @@ fun Test(
                 onCheckedChange = { onSelected(index) },
                 modifier = Modifier.weight(1f),
                 shapes =
-                    when (index) {
+                when (index) {
                     0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                     options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
@@ -659,11 +665,11 @@ fun FilterButtonGroup(
                 onCheckedChange = { onSelected(index) },
                 modifier = Modifier.weight(1f),
                 shapes =
-                    when (index) {
-                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    }
+                when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                }
             ) {
                 Icon(
                     if (selectedIndex == index) checkedIcons[index] else unCheckedIcons[index],
@@ -693,7 +699,6 @@ fun TestPreview() {
 @Composable
 @Preview
 fun M3EDropdown() {
-
 }
 fun learning() {
     // Create new local variables that can be changed
@@ -742,4 +747,120 @@ fun ExpressiveBarChartPreview() {
     }
     ExpressiveBarChart(modelProducer = modelProducer)
 }
+@Composable
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+fun thisIsDefinetlyAComposable() {
+    val groupInteractionSource = remember { MutableInteractionSource() }
+    var expanded by remember { mutableStateOf(false) }
+    var homeChecked by remember { mutableStateOf(false) }
+    val groupLabels = listOf("Modification", "Navigation")
+    val groupItemLabels = listOf(listOf("Edit", "Settings"), listOf("Home", "More Options"))
+    val groupItemLeadingIcons =
+        listOf(
+            listOf(Icons.Outlined.Edit, Icons.Outlined.Settings),
+            listOf(null, Icons.Outlined.Info),
+        )
+    val groupItemCheckedLeadingIcons =
+        listOf(
+            listOf(Icons.Filled.Edit, Icons.Filled.Settings),
+            listOf(Icons.Filled.Check, Icons.Filled.Info),
+        )
+    val groupItemTrailingIcons: List<List<ImageVector?>> =
+        listOf(
+            listOf(null, null),
+            listOf(
+                if (homeChecked) {
+                    Icons.Filled.Home
+                } else {
+                    Icons.Outlined.Home
+                },
+                Icons.Filled.MoreVert,
+            ),
+        )
+    val groupItemSupportingText: List<List<String?>> =
+        listOf(listOf("Edit mode", null), listOf(null, "Opens menu"))
+    val checked = remember {
+        listOf(mutableStateListOf(false, false), mutableStateListOf(false, false))
+    }
 
+    Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+        // Icon button should have a tooltip associated with it for a11y.
+        TooltipBox(
+            positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+            tooltip = { PlainTooltip { Text("Localized description") } },
+            state = rememberTooltipState(),
+        ) {
+            IconButton(onClick = { expanded = true }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "Localized description")
+            }
+        }
+        DropdownMenuPopup(expanded = expanded, onDismissRequest = { expanded = false }) {
+            val groupCount = groupLabels.size
+            groupLabels.fastForEachIndexed { groupIndex, label ->
+                DropdownMenuGroup(
+                    shapes = MenuDefaults.groupShape(groupIndex, groupCount),
+                    interactionSource = groupInteractionSource,
+                ) {
+                    MenuDefaults.Label { Text(label) }
+                    HorizontalDivider(
+                        modifier =
+                        Modifier.padding(horizontal = MenuDefaults.HorizontalDividerPadding)
+                    )
+                    val groupItemCount = groupItemLabels[groupIndex].size
+                    groupItemLabels[groupIndex].fastForEachIndexed { itemIndex, itemLabel ->
+                        DropdownMenuItem(
+                            text = {
+                                val itemSupportingText =
+                                    groupItemSupportingText[groupIndex][itemIndex]
+                                if (itemSupportingText != null) {
+                                    MenuDefaults.LabelWithSupportingText(
+                                        supportingText = { Text(itemSupportingText) }
+                                    ) {
+                                        Text(itemLabel)
+                                    }
+                                } else {
+                                    Text(itemLabel)
+                                }
+                            },
+                            shapes = MenuDefaults.itemShape(itemIndex, groupItemCount),
+                            leadingIcon =
+                            groupItemLeadingIcons[groupIndex][itemIndex]?.let { iconData ->
+                                { Icon(iconData, contentDescription = null) }
+                            },
+                            checkedLeadingIcon = {
+                                Icon(
+                                    groupItemCheckedLeadingIcons[groupIndex][itemIndex],
+                                    contentDescription = null,
+                                )
+                            },
+                            trailingIcon =
+                            groupItemTrailingIcons[groupIndex][itemIndex]?.let { iconData ->
+                                { Icon(iconData, contentDescription = null) }
+                            },
+                            checked = checked[groupIndex][itemIndex],
+                            onCheckedChange = { checked[groupIndex][itemIndex] = it },
+                        )
+                    }
+                }
+
+                if (groupIndex != groupCount - 1) {
+                    Spacer(Modifier.height(MenuDefaults.GroupSpacing))
+                }
+            }
+            if (checked.last().last()) {
+                DropdownMenuGroup(
+                    shapes = TODO(),
+                    modifier = TODO(),
+                    containerColor = TODO(),
+                    tonalElevation = TODO(),
+                    shadowElevation = TODO(),
+                    border = TODO(),
+                    contentPadding = TODO(),
+                    interactionSource = TODO(),
+                    content = TODO()
+                )
+            }
+        }
+    }
+}

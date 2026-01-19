@@ -351,8 +351,7 @@ fun MileageCalculatorScreen(
                 )
             }
             item {
-                
-                }
+            }
             item {
                 Row(
                     modifier = Modifier
@@ -391,10 +390,10 @@ fun MileageCalculatorScreen(
                             coroutineScope.launch(Dispatchers.Default) {
                                 val distance = end - start
                                 val efficiency = distance / fuel
-                                
+
                                 // Calculate fuel cost using manual price if provided, else latest
                                 var calculatedFuelCost: Double? = null
-                                
+
                                 val vehicle = selectedVehicle
                                 val fuelType = vehicle?.fuelType
                                 val manualPrice = manualFuelPriceText.toDoubleOrNull()
@@ -408,7 +407,7 @@ fun MileageCalculatorScreen(
                                         }
                                     }
                                 }
-                                
+
                                 delay(1000)
                                 tripDistance = distance
                                 customCalculationResult = efficiency
@@ -454,7 +453,7 @@ fun MileageCalculatorScreen(
                                 val efficiency = distance / fuel
                                 tripDistance = distance
                                 customCalculationResult = efficiency
-                                
+
                                 // Calculate fuel cost using manual price if provided, else latest
                                 val fuelType = selectedVehicle?.fuelType
                                 val manualPrice = manualFuelPriceText.toDoubleOrNull()
@@ -476,7 +475,7 @@ fun MileageCalculatorScreen(
                                 // Get fuel price data for the trip
                                 var tripFuelPricePerUnit: Double? = null
                                 var tripCurrencyId: String? = null
-                                
+
                                 val fuelType = selectedVehicle?.fuelType
                                 val manualPrice = manualFuelPriceText.toDoubleOrNull()
                                 if (fuelType != null) {
@@ -575,13 +574,16 @@ fun MileageCalculatorScreen(
                             fontSize = 14.sp,
                             color = Color.White
                         )
-                        IconButton(onClick = {
-                            // Clear calculation/result container
-                            isCalculating = false
-                            tripDistance = null
-                            customCalculationResult = null
-                            fuelCost = null
-                        }, modifier = Modifier.size(20.dp)) {
+                        IconButton(
+                            onClick = {
+                                // Clear calculation/result container
+                                isCalculating = false
+                                tripDistance = null
+                                customCalculationResult = null
+                                fuelCost = null
+                            },
+                            modifier = Modifier.size(20.dp)
+                        ) {
                             Icon(Icons.Rounded.Close, contentDescription = "Close Result")
                         }
                     }
@@ -613,7 +615,7 @@ fun MileageCalculatorScreen(
                                 color = Color.White
                             )
                             Text(
-                                text = "Fuel Efficiency: ${decimalFormat.format(customCalculationResult)} km/${fuelUnit}",
+                                text = "Fuel Efficiency: ${decimalFormat.format(customCalculationResult)} km/$fuelUnit",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,

@@ -65,7 +65,6 @@ class DriveService(private val context: Context) {
     private val vehicleDataFilename = "mymileage_app_vehicles.json"
     private val tripDataFilename = "mymileage_app_trips.json"
 
-
     // New methods for Vehicle objects
     suspend fun saveVehiclesToDrive(accountEmail: String, vehicles: List<Vehicle>): Boolean =
         withContext(Dispatchers.IO) {
@@ -222,9 +221,9 @@ class DriveService(private val context: Context) {
             }
         }
 
-    suspend fun retrieveAllDataFromDrive(accountEmail: String): DriveBackupData =       
+    suspend fun retrieveAllDataFromDrive(accountEmail: String): DriveBackupData =
         withContext(Dispatchers.IO) {
-             if (accountEmail.isBlank()) {
+            if (accountEmail.isBlank()) {
                 Log.w("DriveService", "Cannot retrieve data from Drive, account email is blank.")
                 return@withContext DriveBackupData(null, null, null)
             }

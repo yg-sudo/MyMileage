@@ -182,7 +182,8 @@ fun SignInScreen(
                         modifier = Modifier.align(Alignment.End),
                         colors = ButtonDefaults.textButtonColors(contentColor = MyMileage)
                     ) {
-                        Text("Forgot Password?",
+                        Text(
+                            "Forgot Password?",
                         )
                     }
                     TextButton(

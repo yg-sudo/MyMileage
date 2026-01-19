@@ -476,8 +476,6 @@ fun AppNavHost(
     }
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {

@@ -29,7 +29,8 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL("DROP TABLE IF EXISTS `trips`")
 
         // Create new vehicles table with id as primary key
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `vehicles` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `name` TEXT NOT NULL,
@@ -37,10 +38,12 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
                 `createdAt` INTEGER NOT NULL,
                 `updatedAt` INTEGER NOT NULL
             )
-        """)
+        """
+        )
 
         // Create new trips table with vehicleId
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `trips` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `vehicleId` TEXT NOT NULL,
@@ -54,7 +57,8 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
                 `createdAt` INTEGER NOT NULL,
                 `updatedAt` INTEGER NOT NULL
             )
-        """)
+        """
+        )
     }
 }
 
@@ -66,7 +70,8 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         db.execSQL("DROP TABLE IF EXISTS `trips`")
 
         // Create vehicles table with correct schema
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `vehicles` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `name` TEXT NOT NULL,
@@ -74,10 +79,12 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
                 `createdAt` INTEGER NOT NULL,
                 `updatedAt` INTEGER NOT NULL
             )
-        """)
+        """
+        )
 
         // Create trips table with correct schema
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `trips` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `vehicleId` TEXT NOT NULL,
@@ -91,7 +98,8 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
                 `createdAt` INTEGER NOT NULL,
                 `updatedAt` INTEGER NOT NULL
             )
-        """)
+        """
+        )
     }
 }
 
@@ -130,7 +138,8 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
 val MIGRATION_7_8 = object : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Create currencies table
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `currencies` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `code` TEXT NOT NULL,
@@ -138,10 +147,12 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
                 `symbol` TEXT NOT NULL,
                 `isDefault` INTEGER NOT NULL DEFAULT 0
             )
-        """)
+        """
+        )
 
         // Create fuel_prices table
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `fuel_prices` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `fuelType` TEXT NOT NULL,
@@ -150,7 +161,8 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
                 `lastUpdated` INTEGER NOT NULL,
                 `isActive` INTEGER NOT NULL DEFAULT 1
             )
-        """)
+        """
+        )
 
         // Insert default currencies
         db.execSQL("INSERT INTO currencies (id, code, name, symbol, isDefault) VALUES ('usd', 'USD', 'US Dollar', '$', 1)")
@@ -192,7 +204,8 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
 val MIGRATION_9_10 = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Create tripGroup table
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE `tripGroup` (
                 `id` TEXT NOT NULL PRIMARY KEY,
                 `userId` TEXT NOT NULL,
@@ -200,7 +213,8 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
                 `createdAt` INTEGER NOT NULL,
                 `updatedAt` INTEGER NOT NULL
             )
-        """)
+        """
+        )
 
         // Insert sample data
         val id = UUID.randomUUID().toString()

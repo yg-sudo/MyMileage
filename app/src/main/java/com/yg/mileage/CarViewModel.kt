@@ -82,7 +82,7 @@ class CarViewModel(
         vehicleJob?.cancel()
         currencyJob?.cancel()
         fuelPriceJob?.cancel()
-        
+
         tripJob = viewModelScope.launch {
             repository.getAllTrips(userId).collect { trips -> _savedTrips.value = trips }
         }
@@ -98,7 +98,7 @@ class CarViewModel(
         fuelPriceJob = viewModelScope.launch {
             repository.getAllActiveFuelPrices().collect { fuelPrices -> _fuelPrices.value = fuelPrices }
         }
-        
+
         // Load default currency
         viewModelScope.launch {
             _defaultCurrency.value = repository.getDefaultCurrency()
@@ -235,7 +235,7 @@ class CarViewModel(
         val canDelete = canDeleteVehicle(vehicleId)
         if (canDelete) {
             currentUserId?.let { repository.deleteVehicle(vehicleId, it) }
-        } 
+        }
         return canDelete
     }
     suspend fun canDeleteVehicle(vehicleId: String): Boolean {

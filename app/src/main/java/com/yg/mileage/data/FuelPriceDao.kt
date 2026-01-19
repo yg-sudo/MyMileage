@@ -53,6 +53,3 @@ interface FuelPriceDao {
     @Query("SELECT * FROM fuel_prices WHERE fuelType = :fuelType AND currencyId = :currencyId AND isActive = 1 ORDER BY lastUpdated DESC LIMIT 1")
     suspend fun getLatestFuelPriceByCurrency(fuelType: FuelType, currencyId: String): FuelPriceEntity?
 }
-
-
-
