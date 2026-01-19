@@ -32,6 +32,7 @@ data class Trip(
     val fuelCost: Double? = null, // Total fuel cost for this trip
     val fuelPricePerUnit: Double? = null, // Price per liter/kg at time of trip
     val currencyId: String? = null, // Currency used for this trip
+    val tripGroup: String? = null, // Group ID if this trip belongs to a group
     val status: TripStatus = TripStatus.DRAFT,
     val createdAt: Date = Date(),
     val updatedAt: Date = Date()

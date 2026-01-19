@@ -80,7 +80,7 @@ import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.util.UUID
 
-// --- Use your own message type enum ---
+// --- Use your own message type enum --- //
 enum class AppMessageType { ERROR, WARNING, SUCCESS, INFO }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -106,6 +106,9 @@ fun MileageCalculatorScreen(
     var isCalculating by remember { mutableStateOf(false) }
 
     val editingTrip by carViewModel.editingTrip.collectAsState()
+    val editingTripGroupId by carViewModel.editingTripGroupId.collectAsState()
+    val tripGroups by carViewModel.tripGroups.collectAsState()
+
     val defaultCurrency by carViewModel.defaultCurrency.collectAsState()
     val currencies by carViewModel.currencies.collectAsState()
     val listState = rememberLazyListState()
@@ -113,6 +116,10 @@ fun MileageCalculatorScreen(
 
     var currentTripId by rememberSaveable(editingTrip?.id) { mutableStateOf(editingTrip?.id) }
     var isTripInProgress by rememberSaveable(editingTrip != null) { mutableStateOf(editingTrip != null) }
+
+    val groupName = remember(editingTripGroupId, tripGroups) {
+        editingTripGroupId?.let { id -> tripGroups.find { it.id == id }?.groupName }
+    }
 
     fun showMessage(type: AppMessageType, text: String) {
         messageType = type
@@ -163,6 +170,17 @@ fun MileageCalculatorScreen(
         contentPadding = PaddingValues(bottom = 80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (groupName != null) {
+            item {
+                Text(
+                    text = "Group: $groupName",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
+        }
         item {
             ExposedDropdownMenuBox(
                 expanded = vehicleDropdownExpanded,
@@ -483,6 +501,7 @@ fun MileageCalculatorScreen(
                                     fuelCost = if (isComplete) fuelCost else null,
                                     fuelPricePerUnit = tripFuelPricePerUnit,
                                     currencyId = tripCurrencyId,
+                                    tripGroup = editingTripGroupId,
                                     status = if (isComplete) TripStatus.COMPLETED else TripStatus.DRAFT,
                                 )
 

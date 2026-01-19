@@ -1,6 +1,6 @@
 /*
  * MyMileage – Your Smart Vehicle Mileage Tracker
- * Copyright (C) 2025  Yojit Ghadi
+ * Copyright (C) 2026 Yojit Ghadi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,24 +45,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.rounded.List
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.PendingActions
+import androidx.compose.material3.AppBarWithSearch
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
@@ -74,9 +70,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuGroup
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -87,10 +81,19 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.MaterialShapes.Companion.Cookie12Sided
+import androidx.compose.material3.MaterialShapes.Companion.Cookie4Sided
+import androidx.compose.material3.MaterialShapes.Companion.Cookie9Sided
+import androidx.compose.material3.MaterialShapes.Companion.Ghostish
+import androidx.compose.material3.MaterialShapes.Companion.Oval
+import androidx.compose.material3.MaterialShapes.Companion.Pentagon
+import androidx.compose.material3.MaterialShapes.Companion.Pill
+import androidx.compose.material3.MaterialShapes.Companion.SoftBurst
+import androidx.compose.material3.MaterialShapes.Companion.Sunny
+import androidx.compose.material3.MaterialShapes.Companion.VerySunny
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
@@ -98,17 +101,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
+import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -118,15 +117,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import androidx.compose.ui.util.fastForEachIndexed
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
@@ -138,6 +136,38 @@ import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.yg.mileage.ui.theme.MyMileageTheme
 import com.yg.mileage.ui.theme.primaryContainerLight
 import com.yg.mileage.ui.theme.primaryLight
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun ExpressiveTopSearch() {
+    AppBarWithSearch(
+        state = rememberSearchBarState(), // Manages expanded/collapsed state
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = "",
+                onQueryChange = {},
+                onSearch = {},
+                expanded = false,
+                onExpandedChange = {},
+                placeholder = {
+                    // Centered text as shown in your image
+                    Text("Search your marks", textAlign = TextAlign.Center)
+                },
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = {}) {
+                Icon(Icons.Default.Menu, contentDescription = "Menu")
+            }
+        },
+        actions = {
+            IconButton(onClick = {}) {
+                Icon(Icons.Default.AccountCircle, contentDescription = "Profile")
+            }
+        }
+    )
+}
 
 class TestActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -218,16 +248,16 @@ fun ContainedLoading() {
     LoadingIndicator(
         color = primaryLight,
         polygons = listOf(
-            MaterialShapes.SoftBurst,
-            MaterialShapes.Cookie9Sided,
-            MaterialShapes.Pentagon,
-            MaterialShapes.Pill,
-            MaterialShapes.Sunny,
-            MaterialShapes.Cookie4Sided,
-            MaterialShapes.Oval,
-            MaterialShapes.VerySunny,
-            MaterialShapes.Ghostish,
-            MaterialShapes.Cookie12Sided
+            SoftBurst,
+            Cookie9Sided,
+            Pentagon,
+            Pill,
+            Sunny,
+            Cookie4Sided,
+            Oval,
+            VerySunny,
+            Ghostish,
+            Cookie12Sided
         ),
     )
     ContainedLoadingIndicator()
@@ -298,7 +328,7 @@ fun SplitButtonDemo() {
 }
 /**
  * Optional Path to be created for the RoundRect if the corner radii are not identical This
- * is because Canvas has a built in API for drawing round rectangles with the same corner
+ * is because Canvas has a built-in API for drawing round rectangles with the same corner
  * radii in all 4 corners. However, if each corner has a different corner radii, a path must
  * be drawn instead
  */
@@ -674,8 +704,9 @@ fun learning() {
     // Create new local variables that can be changed
     val heck = "Heck, my phone is dead"
     val ohNo = "Oh no, my phone is dead"
+    var conditionOfPhone = ohNo
 
-    if (heck == "Heck, my phone is dead") {
+    if (conditionOfPhone == heck) {
         println(heck)
     } else {
         println(ohNo)
@@ -697,11 +728,11 @@ fun ExpressiveBarChart(modelProducer: CartesianChartModelProducer) {
         ),
         modelProducer = modelProducer,
         // Apply Expressive Motion
-        animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec() // defaultEffectsSpec(),
     )
 }
 @Composable
-@Preview
+@Preview(showSystemUi = true)
 fun ExpressiveBarChartPreview() {
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(Unit) {

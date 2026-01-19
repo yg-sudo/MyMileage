@@ -17,7 +17,8 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources>
-
-    <style name="Theme.MyMileage" parent="Theme.Material3Expressive.DayNight" />
-</resources>
+<journey name="MyMileage Test">
+    <description>Test that all MyMileage features are working.</description>
+    <actions xml:space="preserve">
+        </actions>
+</journey>

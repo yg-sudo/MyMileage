@@ -1,6 +1,6 @@
 /*
  * MyMileage – Your Smart Vehicle Mileage Tracker
- * Copyright (C) 2025  Yojit Ghadi
+ * Copyright (C) 2026 Yojit Ghadi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
