@@ -53,4 +53,3 @@ fun MyMileageTheme(
         content = content,
     )
 }
-

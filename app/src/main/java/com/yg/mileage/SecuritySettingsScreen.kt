@@ -82,7 +82,6 @@ fun SecuritySettingsScreen(carViewModel: CarViewModel) {
             SecurityOptionItem(title = "Recent Security Activity") {
                 // TODO: Implement recent activity display
             }
-
         } ?: run {
             Text("User not signed in or information unavailable.")
         }
@@ -176,7 +175,6 @@ private fun SecurityOptionItem(title: String, onClick: () -> Unit) {
         Text(title)
     }
 }
-
 
 @Preview
 @Composable

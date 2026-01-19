@@ -80,7 +80,7 @@ import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.util.UUID
 
-// --- Use your own message type enum ---
+// --- Use your own message type enum --- //
 enum class AppMessageType { ERROR, WARNING, SUCCESS, INFO }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -106,6 +106,9 @@ fun MileageCalculatorScreen(
     var isCalculating by remember { mutableStateOf(false) }
 
     val editingTrip by carViewModel.editingTrip.collectAsState()
+    val editingTripGroupId by carViewModel.editingTripGroupId.collectAsState()
+    val tripGroups by carViewModel.tripGroups.collectAsState()
+
     val defaultCurrency by carViewModel.defaultCurrency.collectAsState()
     val currencies by carViewModel.currencies.collectAsState()
     val listState = rememberLazyListState()
@@ -113,6 +116,10 @@ fun MileageCalculatorScreen(
 
     var currentTripId by rememberSaveable(editingTrip?.id) { mutableStateOf(editingTrip?.id) }
     var isTripInProgress by rememberSaveable(editingTrip != null) { mutableStateOf(editingTrip != null) }
+
+    val groupName = remember(editingTripGroupId, tripGroups) {
+        editingTripGroupId?.let { id -> tripGroups.find { it.id == id }?.groupName }
+    }
 
     fun showMessage(type: AppMessageType, text: String) {
         messageType = type
@@ -163,6 +170,17 @@ fun MileageCalculatorScreen(
         contentPadding = PaddingValues(bottom = 80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (groupName != null) {
+            item {
+                Text(
+                    text = "Group: $groupName",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+            }
+        }
         item {
             ExposedDropdownMenuBox(
                 expanded = vehicleDropdownExpanded,
@@ -333,8 +351,7 @@ fun MileageCalculatorScreen(
                 )
             }
             item {
-                
-                }
+            }
             item {
                 Row(
                     modifier = Modifier
@@ -373,10 +390,10 @@ fun MileageCalculatorScreen(
                             coroutineScope.launch(Dispatchers.Default) {
                                 val distance = end - start
                                 val efficiency = distance / fuel
-                                
+
                                 // Calculate fuel cost using manual price if provided, else latest
                                 var calculatedFuelCost: Double? = null
-                                
+
                                 val vehicle = selectedVehicle
                                 val fuelType = vehicle?.fuelType
                                 val manualPrice = manualFuelPriceText.toDoubleOrNull()
@@ -390,7 +407,7 @@ fun MileageCalculatorScreen(
                                         }
                                     }
                                 }
-                                
+
                                 delay(1000)
                                 tripDistance = distance
                                 customCalculationResult = efficiency
@@ -436,7 +453,7 @@ fun MileageCalculatorScreen(
                                 val efficiency = distance / fuel
                                 tripDistance = distance
                                 customCalculationResult = efficiency
-                                
+
                                 // Calculate fuel cost using manual price if provided, else latest
                                 val fuelType = selectedVehicle?.fuelType
                                 val manualPrice = manualFuelPriceText.toDoubleOrNull()
@@ -458,7 +475,7 @@ fun MileageCalculatorScreen(
                                 // Get fuel price data for the trip
                                 var tripFuelPricePerUnit: Double? = null
                                 var tripCurrencyId: String? = null
-                                
+
                                 val fuelType = selectedVehicle?.fuelType
                                 val manualPrice = manualFuelPriceText.toDoubleOrNull()
                                 if (fuelType != null) {
@@ -484,6 +501,7 @@ fun MileageCalculatorScreen(
                                     fuelCost = if (isComplete) fuelCost else null,
                                     fuelPricePerUnit = tripFuelPricePerUnit,
                                     currencyId = tripCurrencyId,
+                                    tripGroup = editingTripGroupId,
                                     status = if (isComplete) TripStatus.COMPLETED else TripStatus.DRAFT,
                                 )
 
@@ -556,13 +574,16 @@ fun MileageCalculatorScreen(
                             fontSize = 14.sp,
                             color = Color.White
                         )
-                        IconButton(onClick = {
-                            // Clear calculation/result container
-                            isCalculating = false
-                            tripDistance = null
-                            customCalculationResult = null
-                            fuelCost = null
-                        }, modifier = Modifier.size(20.dp)) {
+                        IconButton(
+                            onClick = {
+                                // Clear calculation/result container
+                                isCalculating = false
+                                tripDistance = null
+                                customCalculationResult = null
+                                fuelCost = null
+                            },
+                            modifier = Modifier.size(20.dp)
+                        ) {
                             Icon(Icons.Rounded.Close, contentDescription = "Close Result")
                         }
                     }
@@ -594,7 +615,7 @@ fun MileageCalculatorScreen(
                                 color = Color.White
                             )
                             Text(
-                                text = "Fuel Efficiency: ${decimalFormat.format(customCalculationResult)} km/${fuelUnit}",
+                                text = "Fuel Efficiency: ${decimalFormat.format(customCalculationResult)} km/$fuelUnit",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center,

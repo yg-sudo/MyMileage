@@ -20,6 +20,7 @@
 
 package com.yg.mileage
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.rounded.List
@@ -47,6 +49,7 @@ import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.PendingActions
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,13 +58,16 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.ToggleFloatingActionButton
@@ -88,6 +94,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yg.mileage.data.TripGroupEntity
 import com.yg.mileage.ui.theme.MyMileageShapeDefaults
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -102,16 +109,47 @@ fun TripLogScreen(
     onNavigateToTripDetails: () -> Unit
 ) {
     val trips by carViewModel.savedTrips.collectAsState()
+    val tripGroups by carViewModel.tripGroups.collectAsState()
     val defaultCurrency by carViewModel.defaultCurrency.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+
+    var showNewGroupDialog by remember { mutableStateOf(false) }
+    var groupToEdit by remember { mutableStateOf<TripGroupEntity?>(null) }
+
+    if (showNewGroupDialog) {
+        NewGroupDialog(
+            onDismiss = { showNewGroupDialog = false },
+            onConfirm = { groupName ->
+                coroutineScope.launch {
+                    carViewModel.addTripGroup(groupName)
+                }
+                showNewGroupDialog = false
+            }
+        )
+    }
+
+    if (groupToEdit != null) {
+        EditGroupDialog(
+            group = groupToEdit!!,
+            onDismiss = { groupToEdit = null },
+            onConfirm = { groupName ->
+                coroutineScope.launch {
+                    carViewModel.updateTripGroup(groupToEdit!!.copy(groupName = groupName, updatedAt = Date()))
+                }
+                groupToEdit = null
+            }
+        )
+    }
 
     TripLogContent(
         modifier = modifier,
         trips = trips,
+        tripGroups = tripGroups,
         defaultCurrency = defaultCurrency,
         onNavigateToTripDetails = onNavigateToTripDetails,
         onEditTrip = { trip ->
             carViewModel.setEditingTrip(trip)
+            carViewModel.setEditingTripGroupId(trip.tripGroup)
             onNavigateToTripDetails()
         },
         onDeleteTrip = { tripId ->
@@ -121,10 +159,99 @@ fun TripLogScreen(
         },
         onNewTrip = {
             carViewModel.setEditingTrip(null)
+            carViewModel.setEditingTripGroupId(null)
             onNavigateToTripDetails()
         },
         onNewGroupTrip = {
-            // TODO: Add group trip logic to viewmodel
+            showNewGroupDialog = true
+        },
+        onAddTripToGroup = { groupId ->
+            carViewModel.setEditingTrip(null)
+            carViewModel.setEditingTripGroupId(groupId)
+            onNavigateToTripDetails()
+        },
+        onEditGroup = { group ->
+            groupToEdit = group
+        },
+        onDeleteGroup = { group ->
+            coroutineScope.launch {
+                carViewModel.deleteTripGroup(group)
+            }
+        }
+    )
+}
+
+@Composable
+fun NewGroupDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var groupName by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("New Group Trip") },
+        text = {
+            Column {
+                Text("Enter a name for this group trip:")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = groupName,
+                    onValueChange = { groupName = it },
+                    label = { Text("Group Name") },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (groupName.isNotBlank()) onConfirm(groupName) },
+                enabled = groupName.isNotBlank()
+            ) {
+                Text("Create")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun EditGroupDialog(
+    group: TripGroupEntity,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var groupName by remember { mutableStateOf(group.groupName) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Group Trip") },
+        text = {
+            Column {
+                Text("Update name for this group trip:")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = groupName,
+                    onValueChange = { groupName = it },
+                    label = { Text("Group Name") },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (groupName.isNotBlank()) onConfirm(groupName) },
+                enabled = groupName.isNotBlank()
+            ) {
+                Text("Update")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
         }
     )
 }
@@ -134,12 +261,16 @@ fun TripLogScreen(
 fun TripLogContent(
     modifier: Modifier = Modifier,
     trips: List<Trip>,
+    tripGroups: List<TripGroupEntity>,
     defaultCurrency: Currency?,
     onNavigateToTripDetails: () -> Unit,
     onEditTrip: (Trip) -> Unit,
     onDeleteTrip: (String) -> Unit,
     onNewTrip: () -> Unit,
-    onNewGroupTrip: () -> Unit
+    onNewGroupTrip: () -> Unit,
+    onAddTripToGroup: (String) -> Unit,
+    onEditGroup: (TripGroupEntity) -> Unit,
+    onDeleteGroup: (TripGroupEntity) -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
     var filterIndex by remember { mutableIntStateOf(0) }
@@ -147,13 +278,51 @@ fun TripLogContent(
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    // Filtered trips according to filter selection
-    val filteredTrips = remember(trips, filterIndex) {
-        when (filterIndex) {
+    // Prepare list items
+    val historyItems = remember(trips, tripGroups, filterIndex) {
+        val filteredTrips = when (filterIndex) {
             1 -> trips.filter { it.status == TripStatus.COMPLETED }
             2 -> trips.filter { it.status == TripStatus.DRAFT }
             else -> trips
         }
+
+        val items = mutableListOf<HistoryItem>()
+        val tripsByGroup = filteredTrips.filter { it.tripGroup != null }.groupBy { it.tripGroup!! }
+        val orphanTrips = filteredTrips.filter { it.tripGroup == null }
+
+        val tempItems = mutableListOf<SortableHistoryItem>()
+
+        // Add Groups
+        tripGroups.forEach { group ->
+            val groupTrips = tripsByGroup[group.id]?.sortedByDescending { it.updatedAt } ?: emptyList()
+            val sortTime = group.updatedAt.time.coerceAtLeast(groupTrips.firstOrNull()?.updatedAt?.time ?: 0L)
+            tempItems.add(SortableHistoryItem.GroupBlock(group, groupTrips, sortTime))
+        }
+
+        // Add Orphan Trips
+        orphanTrips.forEach { trip ->
+            tempItems.add(SortableHistoryItem.SingleTripItem(trip, trip.updatedAt.time))
+        }
+
+        // Sort by time descending
+        tempItems.sortByDescending { it.time }
+
+        // Flatten to HistoryItem list
+        tempItems.forEach { item ->
+            when (item) {
+                is SortableHistoryItem.SingleTripItem -> {
+                    items.add(HistoryItem.SingleTrip(item.trip))
+                }
+                is SortableHistoryItem.GroupBlock -> {
+                    items.add(HistoryItem.GroupHeader(item.group))
+                    item.trips.forEachIndexed { index, trip ->
+                        val isLast = index == item.trips.lastIndex
+                        items.add(HistoryItem.GroupTrip(trip, isLast))
+                    }
+                }
+            }
+        }
+        items
     }
 
     if (showBottomSheet) {
@@ -161,13 +330,15 @@ fun TripLogContent(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
-            FilterBottomSheetContent(onApply = {
-                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        showBottomSheet = false
+            FilterBottomSheetContent(
+                onApply = {
+                    coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            showBottomSheet = false
+                        }
                     }
                 }
-            })
+            )
         }
     }
 
@@ -177,7 +348,7 @@ fun TripLogContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(14.dp)
         ) {
             // FILTER SEGMENTED BUTTONS AT THE TOP
             TripHistoryFilterSegmented(
@@ -188,7 +359,7 @@ fun TripLogContent(
 
             Spacer(Modifier.height(12.dp)) // space between filter and list
 
-            if (filteredTrips.isEmpty()) {
+            if (historyItems.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -200,19 +371,60 @@ fun TripLogContent(
                     )
                 }
             } else {
-                // Expressive individual cards spaced apart
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
-                    items(filteredTrips.sortedByDescending { it.updatedAt }) { trip ->
-                        TripCard(
-                            trip = trip,
-                            dateFormat = dateFormat,
-                            defaultCurrency = defaultCurrency,
-                            onEdit = { onEditTrip(trip) },
-                            onDelete = { onDeleteTrip(trip.id) }
-                        )
+                    items(historyItems) { item ->
+                        when (item) {
+                            is HistoryItem.SingleTrip -> {
+                                Box(modifier = Modifier.padding(vertical = 7.dp)) {
+                                    TripCard(
+                                        trip = item.trip,
+                                        dateFormat = dateFormat,
+                                        defaultCurrency = defaultCurrency,
+                                        onEdit = { onEditTrip(item.trip) },
+                                        onDelete = { onDeleteTrip(item.trip.id) },
+                                        shape = MyMileageShapeDefaults.cardShape
+                                    )
+                                }
+                            }
+                            is HistoryItem.GroupHeader -> {
+                                Box(modifier = Modifier.padding(top = 14.dp)) {
+                                    GroupHeaderItem(
+                                        group = item.group,
+                                        onAddTrip = { onAddTripToGroup(item.group.id) },
+                                        onEdit = { onEditGroup(item.group) },
+                                        onDelete = { onDeleteGroup(item.group) }
+                                    )
+                                }
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 0.dp),
+                                    thickness = 2.dp,
+                                    color = MaterialTheme.colorScheme.surface
+                                )
+                            }
+
+                            is HistoryItem.GroupTrip -> {
+                                val shape = if (item.isLast) MyMileageShapeDefaults.bottomListItemShape() else MyMileageShapeDefaults.middleListItemShape()
+                                TripCard(
+                                    trip = item.trip,
+                                    dateFormat = dateFormat,
+                                    defaultCurrency = defaultCurrency,
+                                    onEdit = { onEditTrip(item.trip) },
+                                    onDelete = { onDeleteTrip(item.trip.id) },
+                                    shape = shape
+                                )
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 0.dp),
+                                    thickness = 2.dp,
+                                    color = MaterialTheme.colorScheme.surface
+                                )
+                            }
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(80.dp)) // Bottom padding for FAB
                     }
                 }
             }
@@ -239,7 +451,7 @@ fun TripLogContent(
                                 visible = true, alignment = Alignment.BottomEnd
                             ),
                         checked = fabMenuExpanded,
-                        containerColor = { containerColor }, // Fixed: Capture color outside the lambda
+                        containerColor = { containerColor },
                         onCheckedChange = { fabMenuExpanded = !fabMenuExpanded }
                     ) {
                         val imageVector by remember {
@@ -286,6 +498,67 @@ fun TripLogContent(
                     },
                     text = { Text(text = "New Group Trip") },
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun GroupHeaderItem(
+    group: TripGroupEntity,
+    onAddTrip: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Surface(
+        shape = MyMileageShapeDefaults.topListItemShape(),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = group.groupName,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilledTonalIconButton(
+                    onClick = onEdit,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = "Edit Group",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                FilledTonalIconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete Group",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                FilledTonalIconButton(
+                    onClick = onAddTrip,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "Add Trip to Group",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
     }
@@ -357,17 +630,22 @@ fun TripCard(
     dateFormat: SimpleDateFormat,
     defaultCurrency: Currency?,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    shape: CornerBasedShape
 ) {
     val isDraft = trip.status == TripStatus.DRAFT
-    val cardColor = if (isDraft)
-        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.13f)
-    else
-        MaterialTheme.colorScheme.surfaceVariant
+    val isDark = isSystemInDarkTheme()
+
+    val cardColor = when {
+        isDraft && isDark -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+        isDraft -> MaterialTheme.colorScheme.errorContainer
+        isDark -> MaterialTheme.colorScheme.surfaceContainer
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = MyMileageShapeDefaults.cardShape, // Fixed: accessing as property
+        shape = shape,
         colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -404,7 +682,7 @@ fun TripCard(
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
-                    IconButton(onClick = { /* Share logic */ } ) {
+                    IconButton(onClick = { /* Share logic */ }) {
                         Icon(
                             imageVector = Icons.Rounded.Share,
                             contentDescription = "Share",
@@ -477,6 +755,17 @@ fun FilterBottomSheetContent(onApply: () -> Unit) {
     Spacer(modifier = Modifier.padding(25.dp))
 }
 
+sealed class HistoryItem {
+    data class SingleTrip(val trip: Trip) : HistoryItem()
+    data class GroupHeader(val group: TripGroupEntity) : HistoryItem()
+    data class GroupTrip(val trip: Trip, val isLast: Boolean) : HistoryItem()
+}
+
+sealed class SortableHistoryItem(val time: Long) {
+    class SingleTripItem(val trip: Trip, time: Long) : SortableHistoryItem(time)
+    class GroupBlock(val group: TripGroupEntity, val trips: List<Trip>, time: Long) : SortableHistoryItem(time)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HistoryPreview() {
@@ -517,12 +806,16 @@ fun HistoryPreview() {
     MaterialTheme {
         TripLogContent(
             trips = sampleTrips,
+            tripGroups = emptyList(),
             defaultCurrency = Currency("inr", "INR", "Indian Rupee", "₹", true),
             onNavigateToTripDetails = {},
             onEditTrip = {},
             onDeleteTrip = {},
             onNewTrip = {},
-            onNewGroupTrip = {}
+            onNewGroupTrip = {},
+            onAddTripToGroup = {},
+            onEditGroup = {},
+            onDeleteGroup = {}
         )
     }
 }

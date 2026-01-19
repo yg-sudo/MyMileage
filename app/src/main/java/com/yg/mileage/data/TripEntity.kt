@@ -27,7 +27,7 @@ import java.util.Date
 @Entity(tableName = "trips")
 data class TripEntity(
     @PrimaryKey val id: String,
-    val userId: String, // <<< NEW FIELD
+    val userId: String,
     val vehicleId: String,
     val vehicleName: String,
     val startMileage: Double?,
@@ -38,6 +38,7 @@ data class TripEntity(
     val fuelCost: Double?,
     val fuelPricePerUnit: Double?,
     val currencyId: String?,
+    val tripGroup: String?,
     val status: TripStatus,
     val createdAt: Date,
     val updatedAt: Date
@@ -55,6 +56,7 @@ data class TripEntity(
             fuelCost = fuelCost,
             fuelPricePerUnit = fuelPricePerUnit,
             currencyId = currencyId,
+            tripGroup = tripGroup,
             status = status,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -65,9 +67,9 @@ data class TripEntity(
         fun fromTrip(trip: Trip, userId: String): TripEntity {
             return TripEntity(
                 id = trip.id,
-                userId = userId, // <<< attach userId
+                userId = userId,
                 vehicleId = trip.vehicleId,
-                vehicleName = "",
+                vehicleName = "", // Assuming vehicleName is looked up or stored elsewhere if needed, or kept empty in DB
                 startMileage = trip.startMileage,
                 endMileage = trip.endMileage,
                 fuelFilled = trip.fuelFilled,
@@ -76,6 +78,7 @@ data class TripEntity(
                 fuelCost = trip.fuelCost,
                 fuelPricePerUnit = trip.fuelPricePerUnit,
                 currencyId = trip.currencyId,
+                tripGroup = trip.tripGroup,
                 status = trip.status,
                 createdAt = trip.createdAt,
                 updatedAt = trip.updatedAt

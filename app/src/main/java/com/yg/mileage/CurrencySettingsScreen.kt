@@ -340,7 +340,6 @@ fun CurrencySettingsScreenContent(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun CurrencySettingsScreenPreview() {
@@ -367,7 +366,6 @@ fun CurrencySettingsScreenPreview() {
         onDeleteFuelPrice = {}
     )
 }
-
 
 @Composable
 fun CurrencyDialog(
@@ -414,13 +412,15 @@ fun CurrencyDialog(
             TextButton(
                 onClick = {
                     if (code.isNotBlank() && name.isNotBlank() && symbol.isNotBlank()) {
-                        onSave(Currency(
-                            id = currency?.id ?: UUID.randomUUID().toString(),
-                            code = code,
-                            name = name,
-                            symbol = symbol,
-                            isDefault = currency?.isDefault ?: false
-                        ))
+                        onSave(
+                            Currency(
+                                id = currency?.id ?: UUID.randomUUID().toString(),
+                                code = code,
+                                name = name,
+                                symbol = symbol,
+                                isDefault = currency?.isDefault ?: false
+                            )
+                        )
                     }
                 }
             ) {
@@ -455,7 +455,6 @@ fun EditCurrencyDialogPreview() {
         onSave = {}
     )
 }
-
 
 @Composable
 fun FuelPriceDialog(
@@ -574,14 +573,16 @@ fun FuelPriceDialog(
                 onClick = {
                     val price = priceText.toDoubleOrNull()
                     if (price != null && price > 0 && selectedCurrencyId.isNotBlank()) {
-                        onSave(FuelPrice(
-                            id = fuelPrice?.id ?: UUID.randomUUID().toString(),
-                            fuelType = selectedFuelType,
-                            pricePerUnit = price,
-                            currencyId = selectedCurrencyId,
-                            lastUpdated = Date(),
-                            isActive = isActive // Pass the checkbox state to the model
-                        ))
+                        onSave(
+                            FuelPrice(
+                                id = fuelPrice?.id ?: UUID.randomUUID().toString(),
+                                fuelType = selectedFuelType,
+                                pricePerUnit = price,
+                                currencyId = selectedCurrencyId,
+                                lastUpdated = Date(),
+                                isActive = isActive // Pass the checkbox state to the model
+                            )
+                        )
                     }
                 }
             ) {

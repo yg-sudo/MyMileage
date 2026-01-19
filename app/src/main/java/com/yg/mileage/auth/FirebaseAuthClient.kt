@@ -44,7 +44,6 @@ import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.cancellation.CancellationException
 
-
 data class UserData(
     val userId: String,
     val username: String?,
@@ -258,7 +257,6 @@ class FirebaseAuthClient(
             SignInResult(data = null, errorMessage = e.localizedMessage ?: e.message)
         }
     }
-
 
     suspend fun signOut() {
         try {

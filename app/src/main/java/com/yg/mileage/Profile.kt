@@ -55,9 +55,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.yg.mileage.ui.theme.MyMileageShapeDefaults
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -93,13 +95,12 @@ fun ProfileScreen(
                 .padding(16.dp)
         ) {
             // Settings Section
-            // Single-row card (now rendered as a grouped container with a bottom-shaped row)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                shape = MyMileageShapeDefaults.topListItemShape() // make the outer container pill-like
+                shape = MyMileageShapeDefaults.topListItemShape()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
@@ -109,10 +110,9 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Bottom-shaped row (acts as bottomListItem of a grouped container)
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = MyMileageShapeDefaults.bottomListItemShape(), // <-- bottom item shape
+                        shape = MyMileageShapeDefaults.bottomListItemShape(),
                         onClick = { navController.navigate("currency_settings") },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
@@ -137,7 +137,6 @@ fun ProfileScreen(
                 }
             }
 
-
             // Grid of vehicles
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -148,7 +147,7 @@ fun ProfileScreen(
                 // Vehicle Cards
                 items(savedVehicles) { vehicle ->
                     VehicleCard(
-                        vehicleName = vehicle.name,
+                        vehicle = vehicle,
                         canDelete = canDeleteVehicle(vehicle.id),
                         onEdit = { navController.navigate("add_vehicle/${vehicle.name}") },
                         onDelete = { onDeleteVehicle(vehicle.id) }
@@ -159,11 +158,10 @@ fun ProfileScreen(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun VehicleCard(
-    vehicleName: String,
+    vehicle: Vehicle,
     canDelete: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit
@@ -171,21 +169,34 @@ fun VehicleCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
-        shape = MaterialShapes.Slanted.toShape()
+            .height(180.dp)
+            .width(180.dp),
+        shape = MaterialShapes.Square.toShape()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            // Vehicle Icon
+            Icon(
+                imageVector = getVehicleIcon(vehicle.iconName),
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Vehicle Name
             Text(
-                text = vehicleName,
-                style = MaterialTheme.typography.bodyLarge,
+                text = vehicle.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
             // Action Buttons

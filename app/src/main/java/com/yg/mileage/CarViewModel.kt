@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.yg.mileage.auth.SignInResult
 import com.yg.mileage.auth.UserData
 import com.yg.mileage.data.Repository
+import com.yg.mileage.data.TripGroupEntity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.UUID
 
 class CarViewModel(
     private val repository: Repository
@@ -41,8 +44,14 @@ class CarViewModel(
     private val _savedTrips = MutableStateFlow<List<Trip>>(emptyList())
     val savedTrips: StateFlow<List<Trip>> = _savedTrips.asStateFlow()
 
+    private val _tripGroups = MutableStateFlow<List<TripGroupEntity>>(emptyList())
+    val tripGroups: StateFlow<List<TripGroupEntity>> = _tripGroups.asStateFlow()
+
     private val _editingTrip = MutableStateFlow<Trip?>(null)
     val editingTrip = _editingTrip.asStateFlow()
+
+    private val _editingTripGroupId = MutableStateFlow<String?>(null)
+    val editingTripGroupId = _editingTripGroupId.asStateFlow()
 
     private val _currentUser = MutableStateFlow<UserData?>(null)
     val currentUser: StateFlow<UserData?> = _currentUser.asStateFlow()
@@ -60,6 +69,7 @@ class CarViewModel(
     val defaultCurrency: StateFlow<Currency?> = _defaultCurrency.asStateFlow()
 
     private var tripJob: Job? = null
+    private var tripGroupJob: Job? = null
     private var vehicleJob: Job? = null
     private var currencyJob: Job? = null
     private var fuelPriceJob: Job? = null
@@ -68,12 +78,16 @@ class CarViewModel(
     fun observeUserData(userId: String) {
         currentUserId = userId
         tripJob?.cancel()
+        tripGroupJob?.cancel()
         vehicleJob?.cancel()
         currencyJob?.cancel()
         fuelPriceJob?.cancel()
-        
+
         tripJob = viewModelScope.launch {
             repository.getAllTrips(userId).collect { trips -> _savedTrips.value = trips }
+        }
+        tripGroupJob = viewModelScope.launch {
+            repository.getAllTripGroups(userId).collect { groups -> _tripGroups.value = groups }
         }
         vehicleJob = viewModelScope.launch {
             repository.getAllVehicles(userId).collect { vehicles -> _savedVehicles.value = vehicles }
@@ -84,7 +98,7 @@ class CarViewModel(
         fuelPriceJob = viewModelScope.launch {
             repository.getAllActiveFuelPrices().collect { fuelPrices -> _fuelPrices.value = fuelPrices }
         }
-        
+
         // Load default currency
         viewModelScope.launch {
             _defaultCurrency.value = repository.getDefaultCurrency()
@@ -93,11 +107,13 @@ class CarViewModel(
 
     fun clearUserData() {
         tripJob?.cancel()
+        tripGroupJob?.cancel()
         vehicleJob?.cancel()
         currencyJob?.cancel()
         fuelPriceJob?.cancel()
         currentUserId = null
         _savedTrips.value = emptyList()
+        _tripGroups.value = emptyList()
         _savedVehicles.value = emptyList()
         _currencies.value = emptyList()
         _fuelPrices.value = emptyList()
@@ -105,8 +121,24 @@ class CarViewModel(
         _editingTrip.value = null
     }
 
+    suspend fun addTripGroup(groupName: String) {
+        val userIdToUse = currentUserId ?: return
+        val newGroup = TripGroupEntity(
+            id = UUID.randomUUID().toString(),
+            userId = userIdToUse,
+            groupName = groupName,
+            createdAt = Date(),
+            updatedAt = Date()
+        )
+        repository.addTripGroup(newGroup)
+    }
+
     fun setEditingTrip(trip: Trip?) {
         _editingTrip.value = trip
+    }
+
+    fun setEditingTripGroupId(groupId: String?) {
+        _editingTripGroupId.value = groupId
     }
 
     suspend fun addTrip(trip: Trip) {
@@ -156,21 +188,43 @@ class CarViewModel(
         val user = FirebaseAuth.getInstance().currentUser
         val isGoogleUser = user?.providerData?.any { it.providerId == "google.com" } == true
         // Only back up completed trips to avoid uploading drafts
-        if (isGoogleUser && trip.status == TripStatus.COMPLETED && user?.email != null) {
+        if (isGoogleUser && trip.status == TripStatus.COMPLETED && user.email != null) {
             repository.backupTripsToDrive(userId, user.email!!)
         }
     }
 
     fun clearEditingTrip() {
         _editingTrip.value = null
+        _editingTripGroupId.value = null
     }
 
     suspend fun deleteTrip(tripId: String) {
         currentUserId?.let { repository.deleteTrip(tripId, it) }
     }
-    suspend fun continueTrip() {
 
+    suspend fun saveTripGroup(groupName: String) {
+        val userId = currentUserId
+        if (userId != null) {
+            val now = Date()
+            val newGroup = TripGroupEntity(
+                id = UUID.randomUUID().toString(),
+                userId = userId,
+                groupName = groupName,
+                createdAt = now,
+                updatedAt = now
+            )
+            repository.saveTripGroup(newGroup)
+        }
     }
+
+    suspend fun updateTripGroup(tripGroup: TripGroupEntity) {
+        repository.updateTripGroup(tripGroup)
+    }
+
+    suspend fun deleteTripGroup(tripGroup: TripGroupEntity) {
+        repository.deleteTripGroup(tripGroup)
+    }
+
     suspend fun addVehicle(vehicle: Vehicle) {
         currentUserId?.let { repository.addVehicle(vehicle, it) }
     }
@@ -181,7 +235,7 @@ class CarViewModel(
         val canDelete = canDeleteVehicle(vehicleId)
         if (canDelete) {
             currentUserId?.let { repository.deleteVehicle(vehicleId, it) }
-        } 
+        }
         return canDelete
     }
     suspend fun canDeleteVehicle(vehicleId: String): Boolean {

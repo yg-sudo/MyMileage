@@ -10,7 +10,7 @@ jobs:
   debug_job:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # --- [FIX START] ---
       - name: Make gradlew executable
@@ -18,7 +18,7 @@ jobs:
       # --- [FIX END] ---
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -27,7 +27,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '4.0.1'
           bundler-cache: true
       
       - name: Install Fastlane
@@ -40,7 +40,7 @@ jobs:
         run: fastlane build_debug
 
       - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk

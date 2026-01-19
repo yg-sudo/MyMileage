@@ -1,6 +1,6 @@
 /*
  * MyMileage – Your Smart Vehicle Mileage Tracker
- * Copyright (C) 2025  Yojit Ghadi
+ * Copyright (C) 2026 Yojit Ghadi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontVariation
 import com.yg.mileage.R
 import com.yg.mileage.ui.theme.AppFonts.googleFlex400
 import com.yg.mileage.ui.theme.AppFonts.googleFlex600
-
 
 val RobotoFlex = FontFamily(Font(R.font.roboto_flex_variable))
 // Set of Material typography styles to start with
@@ -107,7 +106,7 @@ val robotoFlexTopAppBar = FontFamily(
             FontVariation.Setting("XTRA", 500f),
             FontVariation.Setting("YOPQ", 79f),
             FontVariation.Setting("YTAS", 750f),
-            FontVariation.Setting("YTDE", -203f),
+            FontVariation.Setting("YTDE", 203f),
             FontVariation.Setting("YTFI", 738f),
             FontVariation.Setting("YTLC", 514f),
             FontVariation.Setting("YTUC", 712f)
@@ -116,7 +115,7 @@ val robotoFlexTopAppBar = FontFamily(
 )
 
 object AppFonts {
-    val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_variable))
+    val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_600))
     val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_variable))
-
-   }
+    val robotoMonoBold = FontFamily(Font(R.font.roboto_mono_bold))
+}
