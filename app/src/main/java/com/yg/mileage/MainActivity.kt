@@ -25,6 +25,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         val repository = Repository.getRepository(applicationContext)
         firebaseAuthClient = FirebaseAuthClient(applicationContext, repository = repository)
@@ -181,7 +183,7 @@ class MainActivity : ComponentActivity() {
                                             Text(
                                                 "Welcome back, ${currentUser!!.username}!",
                                                 modifier = Modifier.padding(end = 8.dp),
-                                                style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Start) // Use TextAlign.End for better RTL support)
+                                                style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Start) // Use TextAlign.End for better RTL support
                                             )
                                         }
                                         IconButton(onClick = { navController.navigate(Screen.Account.route) }) {

@@ -73,7 +73,7 @@ class Repository(
             Log.d("Repository", "tripDao.insertTrip called successfully for id: ${tripEntity.id}")
         } catch (e: Exception) {
             Log.e("Repository", "Error inserting tripEntity into DAO for id: ${tripEntity.id}", e)
-            throw e // Re-throw to be caught by ViewModel if it can
+            throw e
         }
     }
 
@@ -85,18 +85,13 @@ class Repository(
             Log.d("Repository", "tripDao.updateTrip called successfully for id: ${tripEntity.id}")
         } catch (e: Exception) {
             Log.e("Repository", "Error updating tripEntity in DAO for id: ${tripEntity.id}", e)
-            throw e // Re-throw to be caught by ViewModel if it can
+            throw e
         }
     }
 
     suspend fun deleteTrip(tripId: String, userId: String) {
         val trip = tripDao.getTripById(tripId, userId)
         trip?.let { tripDao.deleteTrip(it) }
-    }
-
-    // --- TRIP GROUP ---
-    suspend fun saveTripGroup(tripGroup: TripGroupEntity) {
-        tripGroupDao.insertTripGroup(tripGroup)
     }
 
     // --- CURRENCY ---
@@ -131,9 +126,7 @@ class Repository(
         fuelPriceDao.getLatestFuelPrice(fuelType)?.toFuelPrice()
 
     suspend fun addFuelPrice(fuelPrice: FuelPrice) {
-        // Deactivate old prices for this fuel type
         fuelPriceDao.deactivateFuelPrices(fuelPrice.fuelType)
-        // Add new price
         fuelPriceDao.insertFuelPrice(FuelPriceEntity.fromFuelPrice(fuelPrice))
     }
 
@@ -146,17 +139,27 @@ class Repository(
     }
 
     // --- TRIP GROUPS ---
-    private val tripGroupDao = database.tripGroupDao()
-
     fun getAllTripGroups(userId: String): Flow<List<TripGroupEntity>> {
         return tripGroupDao.getAllTripGroups(userId)
     }
 
     suspend fun addTripGroup(tripGroup: TripGroupEntity) {
-        tripGroupDao.insert(tripGroup)
+        tripGroupDao.insertTripGroup(tripGroup)
     }
 
-    // --- Optional: Google Drive Backup (Only for Google Users) ---
+    suspend fun updateTripGroup(tripGroup: TripGroupEntity) {
+        tripGroupDao.updateTripGroup(tripGroup)
+    }
+
+    suspend fun deleteTripGroup(tripGroup: TripGroupEntity) {
+        tripGroupDao.deleteTripGroup(tripGroup)
+    }
+
+    suspend fun saveTripGroup(tripGroup: TripGroupEntity) {
+        tripGroupDao.insertTripGroup(tripGroup)
+    }
+
+    // --- Optional: Google Drive Backup ---
     suspend fun backupTripsToDrive(userId: String, accountEmail: String): Boolean {
         return try {
             val allTrips = getAllTrips(userId).first()
@@ -170,17 +173,12 @@ class Repository(
     suspend fun restoreFromDrive(userId: String, accountEmail: String): Boolean {
         return try {
             val backupData = driveService.retrieveAllDataFromDrive(accountEmail)
-
-            // Restore vehicles
             backupData.vehicles?.forEach { vehicle ->
                 addVehicle(vehicle, userId)
             }
-
-            // Restore trips
             backupData.trips?.forEach { trip ->
                 addTrip(trip, userId)
             }
-
             true
         } catch (e: Exception) {
             false

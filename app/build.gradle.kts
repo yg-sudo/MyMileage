@@ -1,6 +1,6 @@
 /*
  * MyMileage – Your Smart Vehicle Mileage Tracker
- * Copyright (C) 2025  Yojit Ghadi
+ * Copyright (C) 2026 Yojit Ghadi
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,36 @@
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+/*
+ * MyMileage – Your Smart Vehicle Mileage Tracker
+ * Copyright (C) 2026 Yojit Ghadi
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.compose.compiler)
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        javaParameters.set(true)
+    }
 }
 
 android {
@@ -43,7 +67,7 @@ android {
         }
     }
 
-signingConfigs {
+    signingConfigs {
         create("release") {
             val keystoreFile = System.getenv("APP_UPLOAD_KEYSTORE_FILE")
             val keystorePassword = System.getenv("APP_UPLOAD_STORE_PASSWORD")
@@ -71,19 +95,9 @@ signingConfigs {
             )
         }
     }
-    buildFeatures {
-        compose = true
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-            javaParameters.set(true)
-        }
     }
     buildFeatures {
         compose = true
@@ -94,6 +108,26 @@ signingConfigs {
     packaging {
         resources {
             resources.excludes.add("META-INF/*")
+        }
+    }
+    testOptions {
+        suites {
+            create("journeysTest") {
+                assets {
+                }
+                targets {
+                    create("default") {
+                    }
+                }
+                useJunitEngine {
+                    inputs += listOf(com.android.build.api.dsl.AgpTestSuiteInputParameters.TESTED_APKS)
+                    includeEngines += listOf("journeys-test-engine")
+                    enginesDependencies(libs.junit.platform.launcher)
+                    enginesDependencies(libs.junit.platform.engine)
+                    enginesDependencies(libs.journeys.junit.engine)
+                }
+                targetVariants += listOf("debug")
+            }
         }
     }
 }
@@ -110,6 +144,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.material)
     implementation(libs.material3)
     implementation(libs.androidx.material3.window.size.class1)
     implementation(libs.material3.adaptive)

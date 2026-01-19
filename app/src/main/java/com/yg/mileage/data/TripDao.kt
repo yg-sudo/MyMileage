@@ -43,7 +43,12 @@ interface TripDao {
             vehicles.id AS v_id,
             vehicles.userId AS v_userId,
             vehicles.name AS v_name,
+            vehicles.make AS v_make,
+            vehicles.model AS v_model,
+            vehicles.year AS v_year,
+            vehicles.registrationNumber AS v_registrationNumber,
             vehicles.fuelType AS v_fuelType,
+            vehicles.iconName AS v_iconName,
             vehicles.createdAt AS v_createdAt,
             vehicles.updatedAt AS v_updatedAt
         FROM trips 
@@ -85,6 +90,7 @@ fun List<TripWithVehicle>.toTripList(): List<Trip> {
             fuelCost = trip.fuelCost,
             fuelPricePerUnit = trip.fuelPricePerUnit,
             currencyId = trip.currencyId,
+            tripGroup = trip.tripGroup,
             status = trip.status,
             createdAt = trip.createdAt,
             updatedAt = trip.updatedAt

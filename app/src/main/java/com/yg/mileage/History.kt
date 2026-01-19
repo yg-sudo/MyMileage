@@ -20,7 +20,7 @@
 
 package com.yg.mileage
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerBasedShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.rounded.List
@@ -51,10 +50,7 @@ import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.PendingActions
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +58,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -89,7 +86,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -118,6 +114,7 @@ fun TripLogScreen(
     val coroutineScope = rememberCoroutineScope()
 
     var showNewGroupDialog by remember { mutableStateOf(false) }
+    var groupToEdit by remember { mutableStateOf<TripGroupEntity?>(null) }
 
     if (showNewGroupDialog) {
         NewGroupDialog(
@@ -131,6 +128,19 @@ fun TripLogScreen(
         )
     }
 
+    if (groupToEdit != null) {
+        EditGroupDialog(
+            group = groupToEdit!!,
+            onDismiss = { groupToEdit = null },
+            onConfirm = { groupName ->
+                coroutineScope.launch {
+                    carViewModel.updateTripGroup(groupToEdit!!.copy(groupName = groupName, updatedAt = Date()))
+                }
+                groupToEdit = null
+            }
+        )
+    }
+
     TripLogContent(
         modifier = modifier,
         trips = trips,
@@ -139,9 +149,7 @@ fun TripLogScreen(
         onNavigateToTripDetails = onNavigateToTripDetails,
         onEditTrip = { trip ->
             carViewModel.setEditingTrip(trip)
-            // If it's part of a group, we might want to set the group ID, but the trip already has it.
-            // TripDetails logic will handle loading from the trip.
-            carViewModel.setEditingTripGroupId(trip.tripGroupId)
+            carViewModel.setEditingTripGroupId(trip.tripGroup)
             onNavigateToTripDetails()
         },
         onDeleteTrip = { tripId ->
@@ -161,6 +169,14 @@ fun TripLogScreen(
             carViewModel.setEditingTrip(null)
             carViewModel.setEditingTripGroupId(groupId)
             onNavigateToTripDetails()
+        },
+        onEditGroup = { group ->
+            groupToEdit = group
+        },
+        onDeleteGroup = { group ->
+            coroutineScope.launch {
+                carViewModel.deleteTripGroup(group)
+            }
         }
     )
 }
@@ -202,6 +218,44 @@ fun NewGroupDialog(
     )
 }
 
+@Composable
+fun EditGroupDialog(
+    group: TripGroupEntity,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var groupName by remember { mutableStateOf(group.groupName) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Group Trip") },
+        text = {
+            Column {
+                Text("Update name for this group trip:")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = groupName,
+                    onValueChange = { groupName = it },
+                    label = { Text("Group Name") },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (groupName.isNotBlank()) onConfirm(groupName) },
+                enabled = groupName.isNotBlank()
+            ) {
+                Text("Update")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TripLogContent(
@@ -214,14 +268,15 @@ fun TripLogContent(
     onDeleteTrip: (String) -> Unit,
     onNewTrip: () -> Unit,
     onNewGroupTrip: () -> Unit,
-    onAddTripToGroup: (String) -> Unit
+    onAddTripToGroup: (String) -> Unit,
+    onEditGroup: (TripGroupEntity) -> Unit,
+    onDeleteGroup: (TripGroupEntity) -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
     var filterIndex by remember { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var showGroupTripDialog by remember { mutableStateOf(false) }
 
     // Prepare list items
     val historyItems = remember(trips, tripGroups, filterIndex) {
@@ -232,43 +287,15 @@ fun TripLogContent(
         }
 
         val items = mutableListOf<HistoryItem>()
-        val tripsByGroup = filteredTrips.filter { it.tripGroupId != null }.groupBy { it.tripGroupId!! }
-        val orphanTrips = filteredTrips.filter { it.tripGroupId == null }
-
-        // Process Groups
-        tripGroups.forEach { group ->
-            val groupTrips = tripsByGroup[group.id]?.sortedByDescending { it.updatedAt } ?: emptyList()
-
-            // Only add group if filter is ALL or if it has relevant items
-            // Requirement says: "Group trips created... will be listed... alongside normal trips"
-            // If we filter by 'Done', maybe we only show groups that have done trips? Or just show groups?
-            // Assuming we show groups always if they match criteria, but for now showing all groups + filtered content within them
-
-            val hasContent = groupTrips.isNotEmpty()
-
-            // Logic: Create a group block.
-            // The timestamp for sorting the block could be the group's updatedAt or the latest trip in it.
-            // Let's use group's updatedAt.
-
-            // We'll create a temporary structure to sort later
-        }
+        val tripsByGroup = filteredTrips.filter { it.tripGroup != null }.groupBy { it.tripGroup!! }
+        val orphanTrips = filteredTrips.filter { it.tripGroup == null }
 
         val tempItems = mutableListOf<SortableHistoryItem>()
 
         // Add Groups
         tripGroups.forEach { group ->
             val groupTrips = tripsByGroup[group.id]?.sortedByDescending { it.updatedAt } ?: emptyList()
-
-            // If we have a filter active, and the group has no trips matching that filter, should we hide the group?
-            // If filter is DRAFT, and group has no drafts, maybe hide it?
-            // For now, let's show the group if it exists, but only show matching trips inside.
-
-            // Actually, if filter is applied, we should probably only show groups that have matching trips OR if the group itself is new (empty).
-            // But 'orphanTrips' handles non-grouped.
-            // Let's stick to: Show group header, then matching trips.
-
             val sortTime = group.updatedAt.time.coerceAtLeast(groupTrips.firstOrNull()?.updatedAt?.time ?: 0L)
-
             tempItems.add(SortableHistoryItem.GroupBlock(group, groupTrips, sortTime))
         }
 
@@ -313,50 +340,13 @@ fun TripLogContent(
         }
     }
 
-    if (showGroupTripDialog) {
-        var groupName by remember { mutableStateOf("") }
-        AlertDialog(
-            onDismissRequest = { showGroupTripDialog = false },
-            title = { Text(text = "New Group Trip") },
-            text = {
-                OutlinedTextField(
-                    value = groupName,
-                    onValueChange = { groupName = it },
-                    label = { Text("Group Name") },
-                    singleLine = true
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (groupName.isNotBlank()) {
-                            coroutineScope.launch {
-                                carViewModel.saveTripGroup(groupName)
-                            }
-                            showGroupTripDialog = false
-                        }
-                    }
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showGroupTripDialog = false }
-                ) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
     Box(
         modifier = modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(14.dp)
         ) {
             // FILTER SEGMENTED BUTTONS AT THE TOP
             TripHistoryFilterSegmented(
@@ -381,16 +371,12 @@ fun TripLogContent(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    // Remove default spacing as we need tight packing for groups, handle spacing manually or via items
-                    // Actually, grouped items need 0 spacing between them?
-                    // "trips... listed in middlelistitemshape and bottomListItemShape"
-                    // This implies they connect visually.
                     verticalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     items(historyItems) { item ->
                         when (item) {
                             is HistoryItem.SingleTrip -> {
-                                Box(modifier = Modifier.padding(vertical = 7.dp)) { // Add spacing around independent cards
+                                Box(modifier = Modifier.padding(vertical = 7.dp)) {
                                     TripCard(
                                         trip = item.trip,
                                         dateFormat = dateFormat,
@@ -402,13 +388,21 @@ fun TripLogContent(
                                 }
                             }
                             is HistoryItem.GroupHeader -> {
-                                Box(modifier = Modifier.padding(top = 14.dp)) { // Add spacing before group start
+                                Box(modifier = Modifier.padding(top = 14.dp)) {
                                     GroupHeaderItem(
                                         group = item.group,
-                                        onAddTrip = { onAddTripToGroup(item.group.id) }
+                                        onAddTrip = { onAddTripToGroup(item.group.id) },
+                                        onEdit = { onEditGroup(item.group) },
+                                        onDelete = { onDeleteGroup(item.group) }
                                     )
                                 }
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 0.dp),
+                                    thickness = 2.dp,
+                                    color = MaterialTheme.colorScheme.surface
+                                )
                             }
+                                    
                             is HistoryItem.GroupTrip -> {
                                 val shape = if (item.isLast) MyMileageShapeDefaults.bottomListItemShape() else MyMileageShapeDefaults.middleListItemShape()
                                 TripCard(
@@ -418,6 +412,11 @@ fun TripLogContent(
                                     onEdit = { onEditTrip(item.trip) },
                                     onDelete = { onDeleteTrip(item.trip.id) },
                                     shape = shape
+                                )
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 0.dp),
+                                    thickness = 2.dp,
+                                    color = MaterialTheme.colorScheme.surface
                                 )
                             }
                         }
@@ -450,7 +449,7 @@ fun TripLogContent(
                                 visible = true, alignment = Alignment.BottomEnd
                             ),
                         checked = fabMenuExpanded,
-                        containerColor = { containerColor }, // Fixed: Capture color outside the lambda
+                        containerColor = { containerColor },
                         onCheckedChange = { fabMenuExpanded = !fabMenuExpanded }
                     ) {
                         val imageVector by remember {
@@ -487,7 +486,7 @@ fun TripLogContent(
                 FloatingActionButtonMenuItem(
                     onClick = {
                         fabMenuExpanded = false
-                        showGroupTripDialog = true
+                        onNewGroupTrip()
                     },
                     icon = {
                         Icon(
@@ -505,11 +504,13 @@ fun TripLogContent(
 @Composable
 fun GroupHeaderItem(
     group: TripGroupEntity,
-    onAddTrip: () -> Unit
+    onAddTrip: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     Surface(
         shape = MyMileageShapeDefaults.topListItemShape(),
-        color = MaterialTheme.colorScheme.secondaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -525,15 +526,37 @@ fun GroupHeaderItem(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
-            FilledTonalIconButton(
-                onClick = onAddTrip,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "Add Trip to Group",
-                    modifier = Modifier.size(18.dp)
-                )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilledTonalIconButton(
+                    onClick = onEdit,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Edit,
+                        contentDescription = "Edit Group",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                FilledTonalIconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete Group",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                FilledTonalIconButton(
+                    onClick = onAddTrip,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "Add Trip to Group",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
     }
@@ -609,10 +632,14 @@ fun TripCard(
     shape: CornerBasedShape
 ) {
     val isDraft = trip.status == TripStatus.DRAFT
-    val cardColor = if (isDraft)
-        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.13f)
-    else
-        MaterialTheme.colorScheme.surfaceVariant
+    val isDark = isSystemInDarkTheme()
+
+    val cardColor = when {
+        isDraft && isDark -> MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+        isDraft -> MaterialTheme.colorScheme.errorContainer
+        isDark -> MaterialTheme.colorScheme.surfaceContainer
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -784,7 +811,9 @@ fun HistoryPreview() {
             onDeleteTrip = {},
             onNewTrip = {},
             onNewGroupTrip = {},
-            onAddTripToGroup = {}
+            onAddTripToGroup = {},
+            onEditGroup = {},
+            onDeleteGroup = {}
         )
     }
 }

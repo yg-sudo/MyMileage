@@ -232,3 +232,37 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
         }
     }
 }
+
+val MIGRATION_11_12 = object : Migration(11, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        fun hasColumn(db: SupportSQLiteDatabase, tableName: String, columnName: String): Boolean {
+            val cursor = db.query("PRAGMA table_info($tableName)")
+            val colIndex = cursor.getColumnIndex("name")
+            var result = false
+            while (cursor.moveToNext()) {
+                if (cursor.getString(colIndex) == columnName) {
+                    result = true
+                    break
+                }
+            }
+            cursor.close()
+            return result
+        }
+
+        if (!hasColumn(db, "vehicles", "make")) {
+            db.execSQL("ALTER TABLE vehicles ADD COLUMN make TEXT NOT NULL DEFAULT ''")
+        }
+        if (!hasColumn(db, "vehicles", "model")) {
+            db.execSQL("ALTER TABLE vehicles ADD COLUMN model TEXT NOT NULL DEFAULT ''")
+        }
+        if (!hasColumn(db, "vehicles", "year")) {
+            db.execSQL("ALTER TABLE vehicles ADD COLUMN year TEXT NOT NULL DEFAULT ''")
+        }
+        if (!hasColumn(db, "vehicles", "registrationNumber")) {
+            db.execSQL("ALTER TABLE vehicles ADD COLUMN registrationNumber TEXT NOT NULL DEFAULT ''")
+        }
+        if (!hasColumn(db, "vehicles", "iconName")) {
+            db.execSQL("ALTER TABLE vehicles ADD COLUMN iconName TEXT NOT NULL DEFAULT 'DirectionsCar'")
+        }
+    }
+}

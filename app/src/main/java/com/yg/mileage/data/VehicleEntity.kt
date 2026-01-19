@@ -27,14 +27,28 @@ import java.util.Date
 @Entity(tableName = "vehicles")
 data class VehicleEntity(
     @PrimaryKey val id: String,
-    val userId: String, // <<< NEW FIELD
+    val userId: String,
     val name: String,
+    val make: String = "",
+    val model: String = "",
+    val year: String = "",
+    val registrationNumber: String = "",
     val fuelType: FuelType?,
+    val iconName: String = "DirectionsCar",
     val createdAt: Date,
     val updatedAt: Date
 ) {
     fun toVehicle(): Vehicle {
-        return Vehicle(id = id, name = name, fuelType = fuelType)
+        return Vehicle(
+            id = id,
+            name = name,
+            make = make,
+            model = model,
+            year = year,
+            fuelType = fuelType,
+            registrationNumber = registrationNumber,
+            iconName = iconName
+        )
     }
 
     companion object {
@@ -43,7 +57,12 @@ data class VehicleEntity(
                 id = vehicle.id,
                 userId = userId,
                 name = vehicle.name,
+                make = vehicle.make,
+                model = vehicle.model,
+                year = vehicle.year,
+                registrationNumber = vehicle.registrationNumber,
                 fuelType = vehicle.fuelType,
+                iconName = vehicle.iconName,
                 createdAt = Date(),
                 updatedAt = Date()
             )

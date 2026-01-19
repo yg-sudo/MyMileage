@@ -19,8 +19,10 @@
 package com.yg.mileage.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,6 +30,15 @@ interface TripGroupDao {
     @Insert
     suspend fun insertTripGroup(tripGroup: TripGroupEntity)
 
+    @Update
+    suspend fun updateTripGroup(tripGroup: TripGroupEntity)
+
+    @Delete
+    suspend fun deleteTripGroup(tripGroup: TripGroupEntity)
+
     @Query("SELECT * FROM tripGroup WHERE userId = :userId ORDER BY createdAt DESC")
     fun getAllTripGroups(userId: String): Flow<List<TripGroupEntity>>
+
+    @Query("SELECT * FROM tripGroup WHERE id = :groupId AND userId = :userId")
+    suspend fun getTripGroupById(groupId: String, userId: String): TripGroupEntity?
 }

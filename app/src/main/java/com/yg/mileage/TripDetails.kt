@@ -80,7 +80,7 @@ import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.util.UUID
 
-// --- Use your own message type enum ---
+// --- Use your own message type enum --- //
 enum class AppMessageType { ERROR, WARNING, SUCCESS, INFO }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -502,7 +502,7 @@ fun MileageCalculatorScreen(
                                     fuelCost = if (isComplete) fuelCost else null,
                                     fuelPricePerUnit = tripFuelPricePerUnit,
                                     currencyId = tripCurrencyId,
-                                    tripGroupId = editingTripGroupId,
+                                    tripGroup = editingTripGroupId,
                                     status = if (isComplete) TripStatus.COMPLETED else TripStatus.DRAFT,
                                 )
 

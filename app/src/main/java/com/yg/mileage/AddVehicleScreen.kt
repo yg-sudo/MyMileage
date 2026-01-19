@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -78,6 +80,9 @@ fun AddVehicleScreen(
     var registrationNumber by remember { 
         mutableStateOf(TextFieldValue(vehicleToEdit?.registrationNumber ?: "")) 
     }
+    var selectedIconName by remember {
+        mutableStateOf(vehicleToEdit?.iconName ?: "DirectionsCar")
+    }
     
     var isError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -109,6 +114,53 @@ fun AddVehicleScreen(
             },
             singleLine = true
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Vehicle Icon Dropdown
+        var iconDropdownExpanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = iconDropdownExpanded,
+            onExpandedChange = { iconDropdownExpanded = !iconDropdownExpanded },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = selectedIconName,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Vehicle Icon") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = getVehicleIcon(selectedIconName),
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = iconDropdownExpanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
+            )
+            ExposedDropdownMenu(
+                expanded = iconDropdownExpanded,
+                onDismissRequest = { iconDropdownExpanded = false }
+            ) {
+                VehicleIcons.forEach { (name, icon) ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(name)
+                            }
+                        },
+                        onClick = {
+                            selectedIconName = name
+                            iconDropdownExpanded = false
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -238,14 +290,16 @@ fun AddVehicleScreen(
                                 model = model.text.trim(),
                                 year = year.text.trim(),
                                 fuelType = fuelType,
-                                registrationNumber = registrationNumber.text.trim()
+                                registrationNumber = registrationNumber.text.trim(),
+                                iconName = selectedIconName
                             ) ?: Vehicle(
                                 name = name,
                                 make = make.text.trim(),
                                 model = model.text.trim(),
                                 year = year.text.trim(),
                                 fuelType = fuelType,
-                                registrationNumber = registrationNumber.text.trim()
+                                registrationNumber = registrationNumber.text.trim(),
+                                iconName = selectedIconName
                             )
                             onSaveVehicle(newVehicle)
                             navController.navigateUp()

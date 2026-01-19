@@ -188,7 +188,7 @@ class CarViewModel(
         val user = FirebaseAuth.getInstance().currentUser
         val isGoogleUser = user?.providerData?.any { it.providerId == "google.com" } == true
         // Only back up completed trips to avoid uploading drafts
-        if (isGoogleUser && trip.status == TripStatus.COMPLETED && user?.email != null) {
+        if (isGoogleUser && trip.status == TripStatus.COMPLETED && user.email != null) {
             repository.backupTripsToDrive(userId, user.email!!)
         }
     }
@@ -205,9 +205,9 @@ class CarViewModel(
     suspend fun saveTripGroup(groupName: String) {
         val userId = currentUserId
         if (userId != null) {
-            val now = java.util.Date()
+            val now = Date()
             val newGroup = TripGroupEntity(
-                id = java.util.UUID.randomUUID().toString(),
+                id = UUID.randomUUID().toString(),
                 userId = userId,
                 groupName = groupName,
                 createdAt = now,
@@ -217,9 +217,14 @@ class CarViewModel(
         }
     }
 
-    suspend fun continueTrip() {
-
+    suspend fun updateTripGroup(tripGroup: TripGroupEntity) {
+        repository.updateTripGroup(tripGroup)
     }
+
+    suspend fun deleteTripGroup(tripGroup: TripGroupEntity) {
+        repository.deleteTripGroup(tripGroup)
+    }
+
     suspend fun addVehicle(vehicle: Vehicle) {
         currentUserId?.let { repository.addVehicle(vehicle, it) }
     }
