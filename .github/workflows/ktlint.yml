@@ -35,7 +35,7 @@ jobs:
 
       - name: Commit and Push fixes
         if: steps.ktlint_check.outcome == 'failure'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "style: Apply Ktlint formatting fixes"
           branch: ${{ github.head_ref }}
