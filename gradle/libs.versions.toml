@@ -47,6 +47,7 @@ androidxMaterial3 = "1.4.0"
 junitPlatformLauncher = "6.0.2"
 junitPlatformEngine = "6.0.2"
 journeysJunitEngine = "0.2.1"
+junitJupiter = "6.0.2"
 
 
 [libraries]
@@ -112,6 +113,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatformLauncher" }
 junit-platform-engine = { group = "org.junit.platform", name = "junit-platform-engine", version.ref = "junitPlatformEngine" }
 journeys-junit-engine = { group = "com.android.tools.journeys", name = "journeys-junit-engine", version.ref = "journeysJunitEngine" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
