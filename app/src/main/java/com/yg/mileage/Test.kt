@@ -728,7 +728,7 @@ fun ExpressiveBarChart(modelProducer: CartesianChartModelProducer) {
         ),
         modelProducer = modelProducer,
         // Apply Expressive Motion
-        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec() //defaultEffectsSpec(),
+        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec() // defaultEffectsSpec(),
     )
 }
 @Composable

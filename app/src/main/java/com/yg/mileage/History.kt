@@ -404,7 +404,7 @@ fun TripLogContent(
                                     color = MaterialTheme.colorScheme.surface
                                 )
                             }
-                                    
+
                             is HistoryItem.GroupTrip -> {
                                 val shape = if (item.isLast) MyMileageShapeDefaults.bottomListItemShape() else MyMileageShapeDefaults.middleListItemShape()
                                 TripCard(

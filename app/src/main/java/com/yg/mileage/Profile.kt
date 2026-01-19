@@ -187,7 +187,7 @@ fun VehicleCard(
                 modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
 
             // Vehicle Name

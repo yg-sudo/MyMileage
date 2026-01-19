@@ -66,4 +66,3 @@ val VehicleIcons = listOf(
 fun getVehicleIcon(name: String): ImageVector {
     return VehicleIcons.find { it.first == name }?.second ?: Rounded.DirectionsCar
 }
-

@@ -83,7 +83,7 @@ fun AddVehicleScreen(
     var selectedIconName by remember {
         mutableStateOf(vehicleToEdit?.iconName ?: "DirectionsCar")
     }
-    
+
     var isError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var fuelTypeError by remember { mutableStateOf(false) }

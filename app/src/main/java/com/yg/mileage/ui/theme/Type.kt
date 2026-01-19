@@ -118,5 +118,4 @@ object AppFonts {
     val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_600))
     val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_variable))
     val robotoMonoBold = FontFamily(Font(R.font.roboto_mono_bold))
-
-   }
+}
