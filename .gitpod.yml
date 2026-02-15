@@ -1,0 +1,6 @@
+image:
+  file: Dockerfile
+
+tasks:
+  - name: Launch Android Studio
+    command: /home/gitpod/android-studio/bin/studio.sh
