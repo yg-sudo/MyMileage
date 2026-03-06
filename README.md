@@ -1,8 +1,6 @@
 <div align="center">
 <img width="1024" height="500" alt="MyMileage" src="https://github.com/user-attachments/assets/5b73998e-f613-4b1f-9a6c-801cded48c58" />
 
-## Important: this is a important branch, as AIs reccomend new issues here.
-
 ## Introducing MyMileage,
 
 MyMileage is a modern Android app that makes tracking your vehicle’s mileage 🚙, fuel efficiency 📊, and trip history 📅 both simple and accurate. Designed with Jetpack Compose and Material 3 Expressive's expressive UI, it delivers a clean, user-friendly experience for drivers of all kinds.
