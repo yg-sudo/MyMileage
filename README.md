@@ -16,6 +16,7 @@ MyMileage is a modern Android app that makes tracking your vehicle’s mileage �
 <a href="https://play.google.com/store/apps/details?id=com.ygllc.mymileage">
   <img src="https://github.com/user-attachments/assets/4dddbe98-ba72-4285-bb9d-87641528dfbc" width="200">
 </a>
+</div>
 
 ### Key Features
 - 🚘 Vehicle Management: Add, edit, and delete vehicle profiles with details like make, model, year, fuel type, and registration number.
