@@ -1,20 +1,21 @@
 <div align="center">
 <img width="1024" height="500" alt="MyMileage" src="https://github.com/user-attachments/assets/5b73998e-f613-4b1f-9a6c-801cded48c58" />
 
-## Introducing MyMileage,
+## Introducing MyMileage
 
-MyMileage is a modern Android app that makes tracking your vehicle’s mileage 🚙, fuel efficiency 📊, and trip history 📅 both simple and accurate. Designed with Jetpack Compose and Material 3 Expressive's expressive UI, it delivers a clean, user-friendly experience for drivers of all kinds.
+MyMileage is a modern Android app that makes tracking your vehicle’s mileage 🚙, fuel efficiency 📊, and trip history 📅 both simple and accurate. Designed with Jetpack Compose and Material 3 Expressive's UI, it delivers a clean, user-friendly experience for drivers of all kinds.
 
-![GitHub Downloads](https://img.shields.io/github/downloads/yg-sudo/MyMileage/total)
-![GitHub Release](https://img.shields.io/github/v/release/yg-sudo/MyMileage?include_prereleases&logo=github)
-![Static Badge](https://img.shields.io/badge/API-26-blue?logo=android&logoColor=%2359AA68)
-![GitHub License](https://img.shields.io/github/license/yg-sudo/MyMileage?logo=gnu)
-![Workflow Status](https://img.shields.io/github/actions/workflow/status/yg-sudo/MyMileage/debug.yml?branch=master&logo=gradle)
-[![CodeRabbit Reviews](https://img.shields.io/coderabbit/prs/github/ygllc/MyMileage?label=CodeRabbit%20Reviews)](https://coderabbit.ai)
+[![Downloads](https://img.shields.io/github/downloads/yg-sudo/MyMileage/total)](https://github.com/yg-sudo/MyMileage/releases)
+[![Release](https://img.shields.io/github/v/release/yg-sudo/MyMileage)](https://github.com/yg-sudo/MyMileage/releases)
+![API](https://img.shields.io/badge/API-26-blue?logo=android)
+![License](https://img.shields.io/github/license/yg-sudo/MyMileage)
+![Build](https://img.shields.io/github/actions/workflow/status/yg-sudo/MyMileage/debug.yml?branch=master)
+[![CodeRabbit](https://img.shields.io/badge/CodeRabbit-Reviews-orange)](https://coderabbit.ai)
 [![Gitpod](https://img.shields.io/badge/Gitpod-Open-blue?logo=gitpod)](https://gitpod.io/#https://github.com/ygllc/MyMileage)
 
-<img width="239" height="71" alt="GetItOnGooglePlay_Badge_Web_color_English" src="https://github.com/user-attachments/assets/4dddbe98-ba72-4285-bb9d-87641528dfbc" />
-</div>
+<a href="https://play.google.com/store/apps/details?id=com.ygllc.mymileage">
+  <img src="https://github.com/user-attachments/assets/4dddbe98-ba72-4285-bb9d-87641528dfbc" width="200">
+</a>
 
 ### Key Features
 - 🚘 Vehicle Management: Add, edit, and delete vehicle profiles with details like make, model, year, fuel type, and registration number.
