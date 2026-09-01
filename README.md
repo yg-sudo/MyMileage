@@ -47,11 +47,13 @@ You can support MyMileage by downloading or suggesting improvements at unmesh.gh
 
 ## Star History
 
-<a href="https://www.star-history.com/#ygllc/MyMileage&type=date&legend=top-left">
+## Star History
+
+<a href="https://www.star-history.com/?repos=ygllc%2FMyMileage&type=date&legend=bottom-right">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=ygllc/MyMileage&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=ygllc/MyMileage&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=ygllc/MyMileage&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=ygllc/MyMileage&type=date&theme=dark&legend=bottom-right&sealed_token=tbxG4lkEppJjFb3WtaW2xULlFABRe-l9PP6GreqMAmR3id8-_IwMBIX--V27C15-1ztRmcMpxFXY2mgIpm0SEtD0do2s_KuCrF-I8jhnHcggWSoWqKa74--xPJ93Ex3Kaa1n3yNOLH8dCNZh_OQN6hnyyBUwkU6qjY5ANvJapetlWvq7WVQogOSajEn3" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=ygllc/MyMileage&type=date&legend=bottom-right&sealed_token=tbxG4lkEppJjFb3WtaW2xULlFABRe-l9PP6GreqMAmR3id8-_IwMBIX--V27C15-1ztRmcMpxFXY2mgIpm0SEtD0do2s_KuCrF-I8jhnHcggWSoWqKa74--xPJ93Ex3Kaa1n3yNOLH8dCNZh_OQN6hnyyBUwkU6qjY5ANvJapetlWvq7WVQogOSajEn3" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=ygllc/MyMileage&type=date&legend=bottom-right&sealed_token=tbxG4lkEppJjFb3WtaW2xULlFABRe-l9PP6GreqMAmR3id8-_IwMBIX--V27C15-1ztRmcMpxFXY2mgIpm0SEtD0do2s_KuCrF-I8jhnHcggWSoWqKa74--xPJ93Ex3Kaa1n3yNOLH8dCNZh_OQN6hnyyBUwkU6qjY5ANvJapetlWvq7WVQogOSajEn3" />
  </picture>
 </a>
 
